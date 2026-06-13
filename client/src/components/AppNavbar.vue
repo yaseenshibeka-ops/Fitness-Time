@@ -30,7 +30,7 @@
             <router-link class="nav-link position-relative d-flex align-items-center gap-1" to="/cart" title="Cart" style="padding-top: 6px; padding-bottom: 6px;">
               <div class="position-relative d-inline-block">
                 <i class="bi bi-cart3" style="font-size: 1.1rem; vertical-align: middle;"></i>
-                <span v-if="cart.count > 0" class="cart-badge">{{ cart.count > 99 ? '99+' : cart.count }}</span>
+                <span v-if="cartCount > 0" class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
               </div>
               <span v-if="cart.timeLeft > 0" class="navbar-countdown">{{ cart.countdownText }}</span>
             </router-link>
@@ -85,9 +85,11 @@
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { auth } from '../stores/auth'
 import { cart } from '../stores/cart'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
+const cartCount = cart.count
 const mobileOpen = ref(false)
 const searchOpen = ref(false)
 const query = ref('')
@@ -114,6 +116,10 @@ onMounted(() => {
     document.documentElement.classList.add('dark')
   }
 
+  if (auth.isLoggedIn) cart.fetchCount()
+})
+
+watch(() => route.path, () => {
   if (auth.isLoggedIn) cart.fetchCount()
 })
 
