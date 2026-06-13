@@ -1,24 +1,33 @@
 const fs = require('fs');
 const path = require('path');
-const mysql = require('mysql2/promise');
+const { Client } = require('pg');
 
 async function migrate() {
     console.log('Starting database migration...');
     
-    const connection = await mysql.createConnection({
-        host: process.env.DB_HOST || 'localhost',
-        user: process.env.DB_USER || 'root',
-        password: process.env.DB_PASSWORD || 'secret',
-        port: process.env.DB_PORT || 3306,
-    });
+    let clientConfig = {};
+    if (process.env.DATABASE_URL) {
+        clientConfig.connectionString = process.env.DATABASE_URL;
+    } else {
+        clientConfig = {
+            host: process.env.DB_HOST || 'localhost',
+            user: process.env.DB_USER || 'postgres',
+            password: process.env.DB_PASSWORD || 'secret',
+            database: process.env.DB_NAME || 'fittrack',
+            port: parseInt(process.env.DB_PORT || '5432', 10),
+        };
+    }
 
-    const dbName = process.env.DB_NAME || 'fittrack';
+    const isProduction = process.env.NODE_ENV === 'production';
+    if ((clientConfig.connectionString && clientConfig.connectionString.includes('neon.tech')) || isProduction) {
+        clientConfig.ssl = { rejectUnauthorized: false };
+    }
+
+    const client = new Client(clientConfig);
 
     try {
-        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
-        console.log(`Database '${dbName}' ensured.`);
-        
-        await connection.query(`USE \`${dbName}\`;`);
+        await client.connect();
+        console.log('Connected to database successfully.');
 
         const migrationsDir = path.join(__dirname, 'migrations');
         const sqlFiles = fs.readdirSync(migrationsDir)
@@ -27,15 +36,20 @@ async function migrate() {
 
         for (const file of sqlFiles) {
             const sqlFilePath = path.join(migrationsDir, file);
-            const sqlContent = fs.readFileSync(sqlFilePath, 'utf8');
+            let sqlContent = fs.readFileSync(sqlFilePath, 'utf8');
             console.log(`Executing ${file}...`);
 
-            const statements = sqlContent.split(';').filter(stmt => stmt.trim().length > 0);
+            // Split by semicolon, but ignore semicolons within comments or strings if possible.
+            // A simple split on ';' works for these migration files, but we should trim and execute.
+            const statements = sqlContent.split(';').map(s => s.trim()).filter(s => s.length > 0);
 
             for (let statement of statements) {
-                if (statement.trim()) {
-                    await connection.query(statement);
+                // Skip MySQL specific session variable queries
+                if (statement.startsWith('SET ') || statement.startsWith('PREPARE ') || statement.startsWith('EXECUTE ') || statement.startsWith('DEALLOCATE ')) {
+                    continue;
                 }
+                
+                await client.query(statement);
             }
         }
         
@@ -44,7 +58,7 @@ async function migrate() {
         console.error('Migration failed:', error);
         process.exit(1);
     } finally {
-        await connection.end();
+        await client.end();
     }
 }
 

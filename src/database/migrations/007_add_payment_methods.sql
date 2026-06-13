@@ -1,5 +1,4 @@
 -- 007_add_payment_methods.sql
--- Add new payment methods: bank_transfer and paypal
-
-ALTER TABLE payments
-MODIFY COLUMN payment_method ENUM('mtn_momo', 'airtel_money', 'cash_on_delivery', 'bank_transfer', 'paypal') NOT NULL;
+-- In PostgreSQL migration, payments.payment_method is already VARCHAR(50) which supports any string method.
+-- We ensure the column type matches.
+ALTER TABLE payments ALTER COLUMN payment_method TYPE VARCHAR(50);

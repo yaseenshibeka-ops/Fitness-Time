@@ -396,7 +396,7 @@ class AdminService {
 
   static async updateSettings(data) {
     for (const [key, value] of Object.entries(data)) {
-      await pool.query('INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=?',
+      await pool.query('INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON CONFLICT (setting_key) DO UPDATE SET setting_value=?',
         [key, value, value]);
     }
     return { message: 'Settings updated' };

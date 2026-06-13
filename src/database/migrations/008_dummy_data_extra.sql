@@ -3,20 +3,20 @@
 
 -- ===== REVIEWS TABLE =====
 CREATE TABLE IF NOT EXISTS product_reviews (
-    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    review_id SERIAL PRIMARY KEY,
     product_id INT NOT NULL,
     user_id INT NOT NULL,
-    rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
     review_text TEXT,
     is_verified_purchase BOOLEAN DEFAULT FALSE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    UNIQUE KEY unique_user_product_review (user_id, product_id)
+    UNIQUE (user_id, product_id)
 );
 
 -- ===== EXTRA PRODUCTS =====
-INSERT IGNORE INTO products (product_id, name, description, price, stock_quantity, image_url, category_id) VALUES
+INSERT INTO products (product_id, name, description, price, stock_quantity, image_url, category_id) VALUES
 (21, 'Pro Weight Bench', 'Adjustable weight bench with 7 back positions and 3 seat positions, supports up to 300kg', 180000, 20, 'https://images.unsplash.com/photo-1639815188547-89e0da10e35e?w=400&h=300&fit=crop', 1),
 (22, 'Battle Rope 15m', '15m x 38mm heavy-duty poly-dacron battle rope for explosive strength training', 35000, 40, 'https://images.unsplash.com/photo-1534258936925-c8bed0f9c84e?w=400&h=300&fit=crop', 1),
 (23, 'Pre-Workout 300g', 'High-stimulant pre-workout powder, green apple flavour, 30 servings', 32000, 60, 'https://images.unsplash.com/photo-1593095948071-474c5cc2c1cf?w=400&h=300&fit=crop', 2),
@@ -28,10 +28,11 @@ INSERT IGNORE INTO products (product_id, name, description, price, stock_quantit
 (29, 'Weightlifting Belt', 'Premium 4-inch suede leather weightlifting belt with double-prong buckle', 45000, 30, 'https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=400&h=300&fit=crop', 4),
 (30, 'Gym Gloves', 'Breathable gym gloves with silicone grip padding and wrist support straps', 15000, 100, 'https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=400&h=300&fit=crop', 4),
 (31, 'Skipping Rope Speed', 'Ball-bearing speed jump rope with 4.5m adjustable PVC-coated steel cable', 10000, 150, 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop', 4),
-(32, 'Ankle Weights 2x2.5kg', 'Adjustable ankle weights with sand filling, comfortable neoprene padding', 22000, 55, 'https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=400&h=300&fit=crop', 4);
+(32, 'Ankle Weights 2x2.5kg', 'Adjustable ankle weights with sand filling, comfortable neoprene padding', 22000, 55, 'https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=400&h=300&fit=crop', 4)
+ON CONFLICT (product_id) DO NOTHING;
 
 -- ===== PRODUCT REVIEWS =====
-INSERT IGNORE INTO product_reviews (product_id, user_id, rating, review_text, is_verified_purchase, created_at) VALUES
+INSERT INTO product_reviews (product_id, user_id, rating, review_text, is_verified_purchase, created_at) VALUES
 -- Product 1: Smart Treadmill Pro
 (1, 2, 5, 'Excellent treadmill! The Bluetooth connectivity with the FitTrack app makes tracking seamless. Delivery was prompt and assembly was straightforward.', TRUE, '2026-02-01'),
 (1, 3, 4, 'Great quality treadmill for the price. The incline feature works perfectly. Would recommend to serious runners.', TRUE, '2026-02-15'),
@@ -74,20 +75,26 @@ INSERT IGNORE INTO product_reviews (product_id, user_id, rating, review_text, is
 (26, 2, 5, 'Extremely comfortable running shoes. Lightweight with great arch support for long distances.', FALSE, '2026-05-10'),
 (26, 5, 4, 'Good quality training shoes. True to size and very breathable for intense workouts.', FALSE, '2026-05-12'),
 -- Product 27: Training Shorts Elite
-(27, 6, 5, 'The compression liner is a game changer. No chafing during long runs and the zip pocket fits my phone.', FALSE, '2026-05-08');
+(27, 6, 5, 'The compression liner is a game changer. No chafing during long runs and the zip pocket fits my phone.', FALSE, '2026-05-08')
+ON CONFLICT (user_id, product_id) DO NOTHING;
 
 -- ===== EXTRA ORDERS =====
-INSERT IGNORE INTO orders (order_id, user_id, order_reference, full_name, email, phone, delivery_address, subtotal, delivery_fee, grand_total, status, created_at) VALUES
+INSERT INTO orders (order_id, user_id, order_reference, full_name, email, phone, delivery_address, subtotal, delivery_fee, grand_total, status, created_at) VALUES
 (9,  2, 'FT-2026-0009', 'Jean-Pierre Habimana', 'jean@example.com',  '+250788100001', 'KG 123 St, Kigali',                180000, 0,    180000, 'delivered', '2026-02-15 10:00:00'),
 (10, 3, 'FT-2026-0010', 'Alice Mukamana',       'alice@example.com', '+250788100002', 'KN 45 Ave, Musanze',               64000,  2000, 66000,  'delivered', '2026-02-20 14:30:00'),
 (11, 5, 'FT-2026-0011', 'Grace Uwimana',        'grace@example.com','+250788100004', 'KG 200 St, Kicukiro',              127000, 0,    127000, 'delivered', '2026-03-25 09:15:00'),
 (12, 6, 'FT-2026-0012', 'Patrick Mugabo',       'patrick@example.com','+250788100005','KK 15 Rd, Kigali',                 40000,  2000, 42000,  'shipped',   '2026-04-20 11:45:00'),
 (13, 2, 'FT-2026-0013', 'Jean-Pierre Habimana', 'jean@example.com',  '+250788100001', 'KG 123 St, Kigali',                95000,  0,    95000,  'confirmed', '2026-05-01 08:00:00'),
 (14, 4, 'FT-2026-0014', 'David Niyonzima',      'david@example.com', '+250788100003', 'RB 7 St, Rubavu',                  222000, 0,    222000, 'processing','2026-05-05 16:20:00'),
-(15, 3, 'FT-2026-0015', 'Alice Mukamana',       'alice@example.com', '+250788100002', 'KN 45 Ave, Musanze',               50000,  2000, 52000,  'pending',   '2026-05-12 13:00:00');
+(15, 3, 'FT-2026-0015', 'Alice Mukamana',       'alice@example.com', '+250788100002', 'KN 45 Ave, Musanze',               50000,  2000, 52000,  'pending',   '2026-05-12 13:00:00')
+ON CONFLICT (order_id) DO NOTHING;
 
 -- ===== EXTRA ORDER ITEMS =====
-INSERT IGNORE INTO order_items (order_id, product_id, quantity, unit_price, total_price) VALUES
+-- Order items have SERIAL key, so ON CONFLICT (item_id) DO NOTHING works.
+-- Note: Order items in 008 don't specify item_id, so they will be inserted sequentially.
+-- If they don't specify item_id, we don't have to specify ON CONFLICT since it generates a new item_id, unless we want to avoid duplicates on order_id and product_id.
+-- Let's check: order_items doesn't have unique index on (order_id, product_id) in schema, so they just insert. Standard INSERT works fine.
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, total_price) VALUES
 -- Order 9: Jean's 2nd order — Pro Weight Bench
 (9,  21, 1, 180000, 180000),
 -- Order 10: Alice's 2nd order — Resistance Bands + Jump Rope
@@ -112,25 +119,29 @@ INSERT IGNORE INTO order_items (order_id, product_id, quantity, unit_price, tota
 (15, 32, 1, 14000,  14000);
 
 -- ===== EXTRA PAYMENTS =====
-INSERT IGNORE INTO payments (user_id, order_id, payment_method, phone_number, amount, transaction_reference, payment_status, payment_date) VALUES
+-- Payments here don't specify payment_id, so they're generated. Let's just use standard INSERT.
+-- If transaction_reference is UNIQUE, we can add: ON CONFLICT (transaction_reference) DO NOTHING
+INSERT INTO payments (user_id, order_id, payment_method, phone_number, amount, transaction_reference, payment_status, payment_date) VALUES
 (2, 9,  'mtn_momo',    '+250788100001', 180000, 'MOMO-2026-009', 'completed', '2026-02-15 10:05:00'),
 (3, 10, 'airtel_money','+250788100002', 66000,  'AIR-2026-010',  'completed', '2026-02-20 14:35:00'),
 (5, 11, 'mtn_momo',    '+250788100004', 127000, 'MOMO-2026-011', 'completed', '2026-03-25 09:20:00'),
 (6, 12, 'mtn_momo',    '+250788100005', 42000,  'MOMO-2026-012', 'completed', '2026-04-20 11:50:00'),
 (2, 13, 'bank_transfer', NULL,          95000,  'TXN-2026-013',  'pending',   NULL),
 (4, 14, 'paypal',       NULL,          222000, 'PPL-2026-014',   'pending',   NULL),
-(3, 15, 'cash_on_delivery', NULL,       52000,  'COD-2026-015',  'pending',   NULL);
+(3, 15, 'cash_on_delivery', NULL,       52000,  'COD-2026-015',  'pending',   NULL)
+ON CONFLICT (transaction_reference) DO NOTHING;
 
 -- ===== EXTRA CART ITEMS =====
-INSERT IGNORE INTO cart_items (cart_id, product_id, quantity) VALUES
+INSERT INTO cart_items (cart_id, product_id, quantity) VALUES
 (1, 26, 1),
 (1, 31, 2),
 (2, 25, 1),
 (3, 21, 1),
-(3, 30, 2);
+(3, 30, 2)
+ON CONFLICT (cart_id, product_id) DO NOTHING;
 
 -- ===== EXTRA WORKOUT HISTORY =====
-INSERT IGNORE INTO workout_history (user_id, workout_type, duration_minutes, calories_burned, notes, workout_date) VALUES
+INSERT INTO workout_history (user_id, workout_type, duration_minutes, calories_burned, notes, workout_date) VALUES
 (2, 'Strength Training', 60, 500, 'Chest and triceps: bench press 5x5, incline 3x10, tricep pushdowns 3x12', '2026-04-06'),
 (2, 'Running',           40, 360, '6km interval run: 4 min fast / 1 min recovery',                       '2026-04-07'),
 (2, 'Swimming',          30, 280, 'Freestyle laps 800m',                                                 '2026-04-08'),
@@ -152,7 +163,7 @@ INSERT IGNORE INTO workout_history (user_id, workout_type, duration_minutes, cal
 (6, 'Strength Training', 60, 460, 'Back and biceps: pull-ups, cable rows, curls',                        '2026-03-28');
 
 -- ===== EXTRA USER NOTIFICATIONS =====
-INSERT IGNORE INTO user_notifications (user_id, type, title, message, link, is_read) VALUES
+INSERT INTO user_notifications (user_id, type, title, message, link, is_read) VALUES
 (2, 'order',     'New Order',             'Your order FT-2026-0013 is confirmed and being prepared.',              '/dashboard/orders/13',     FALSE),
 (2, 'fitness',   'New PR!',               'Congratulations! You hit a new personal record on bench press: 85kg!', '/dashboard/fitness',       TRUE),
 (3, 'order',     'Order Placed',          'Your order FT-2026-0015 has been placed successfully.',                 '/dashboard/orders/15',     FALSE),
@@ -165,7 +176,7 @@ INSERT IGNORE INTO user_notifications (user_id, type, title, message, link, is_r
 (6, 'fitness',   'Welcome to Boxing',     'Try our new boxing workout plans in the fitness tracker!',              '/dashboard/fitness',       FALSE);
 
 -- ===== EXTRA ADMIN NOTIFICATIONS =====
-INSERT IGNORE INTO notifications (type, title, message, related_id, related_type, is_read) VALUES
+INSERT INTO notifications (type, title, message, related_id, related_type, is_read) VALUES
 ('order',   'New Order Placed',     'Order FT-2026-0013 placed by Jean-Pierre Habimana — 95,000 RWF',            13, 'order',  FALSE),
 ('order',   'New Order Placed',     'Order FT-2026-0014 placed by David Niyonzima — 222,000 RWF',               14, 'order',  FALSE),
 ('order',   'New Order Placed',     'Order FT-2026-0015 placed by Alice Mukamana — 52,000 RWF',                 15, 'order',  FALSE),

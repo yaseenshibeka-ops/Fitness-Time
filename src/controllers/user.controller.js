@@ -37,7 +37,7 @@ exports.getWishlist = async (req, res, next) => {
 
 exports.addToWishlist = async (req, res, next) => {
   try {
-    await pool.query('INSERT IGNORE INTO wishlist (user_id, product_id) VALUES (?,?)', [req.user.userId, req.body.productId]);
+    await pool.query('INSERT INTO wishlist (user_id, product_id) VALUES (?,?) ON CONFLICT (user_id, product_id) DO NOTHING', [req.user.userId, req.body.productId]);
     res.status(201).json({ status: 'success', data: { message: 'Added to wishlist' } });
   } catch (e) { next(e); }
 };
@@ -184,7 +184,7 @@ exports.updateUserSettings = async (req, res, next) => {
   try {
     const { theme, emailNotifications, pushNotifications, privacyShareProgress } = req.body;
     await pool.query(
-      'INSERT INTO user_settings (user_id, theme, email_notifications, push_notifications, privacy_share_progress) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE theme=?, email_notifications=?, push_notifications=?, privacy_share_progress=?',
+      'INSERT INTO user_settings (user_id, theme, email_notifications, push_notifications, privacy_share_progress) VALUES (?,?,?,?,?) ON CONFLICT (user_id) DO UPDATE SET theme=?, email_notifications=?, push_notifications=?, privacy_share_progress=?',
       [req.user.userId, theme, emailNotifications, pushNotifications, privacyShareProgress, theme, emailNotifications, pushNotifications, privacyShareProgress]);
     res.json({ status: 'success', data: { message: 'Settings saved' } });
   } catch (e) { next(e); }
