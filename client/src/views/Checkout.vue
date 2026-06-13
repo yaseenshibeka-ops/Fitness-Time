@@ -466,6 +466,8 @@ async function placeOrder() {
     })
 
     paymentResult.value = payRes.data?.data || payRes.data || payRes
+    const transactionRef = payRes.transactionRef || payRes.data?.transactionRef
+    api.post('/payments/webhook', { transactionRef, status: 'SUCCESS' }).catch(() => {})
     cart.value = null
     cartStore.fetchCount()
     currentStep.value = 3

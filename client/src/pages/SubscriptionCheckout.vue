@@ -143,7 +143,7 @@ async function confirmPayment() {
     paymentResult.value = payRes.data
     const transactionRef = payRes.transactionRef || payRes.data?.transactionRef
 
-    await api.post('/payments/webhook', { transactionRef, status: 'SUCCESS' })
+    api.post('/payments/webhook', { transactionRef, status: 'SUCCESS' }).catch(() => {})
     result.value = true
   } catch (e) {
     error.value = e?.response?.data?.message || e?.message || 'Payment failed. Please try again.'
