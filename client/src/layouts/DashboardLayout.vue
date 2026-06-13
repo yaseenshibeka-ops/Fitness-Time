@@ -91,15 +91,26 @@ watch(() => route.path, () => {
 .dashboard-sidebar {
   width: 220px;
   background: var(--surface);
-  border-right: 1px solid var(--glass-border);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   transition: width 0.3s, transform 0.3s ease-in-out;
   flex-shrink: 0;
   overflow: hidden;
 }
 .dashboard-sidebar.collapsed { width: 60px; }
-.dashboard-sidebar .nav-link { color: var(--text-muted); transition: all .2s; }
-.dashboard-sidebar .nav-link:hover { background: var(--glass); color: var(--text-light); }
-.dashboard-sidebar .nav-link.active { background: var(--primary); color: white; }
+.dashboard-sidebar .nav-link {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  transition: color 0.15s, background 0.15s;
+}
+.dashboard-sidebar .nav-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-light);
+}
+.dashboard-sidebar .nav-link.active {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  font-weight: 600;
+}
 
 .dashboard-content {
   padding: 1.75rem;
@@ -121,7 +132,7 @@ watch(() => route.path, () => {
     transform: translateX(0);
   }
   .dashboard-sidebar.collapsed {
-    width: 240px; /* Force full sidebar width on mobile screen */
+    width: 240px;
   }
   .dashboard-sidebar .menu-text {
     display: inline !important;
@@ -133,8 +144,6 @@ watch(() => route.path, () => {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
     z-index: 1030;
   }
   .dashboard-content {
@@ -146,18 +155,5 @@ watch(() => route.path, () => {
   .dashboard-content {
     padding: 0.75rem;
   }
-}
-
-/* Bell Animation */
-.animate-bell:hover i {
-  animation: ring 0.5s ease-in-out;
-}
-@keyframes ring {
-  0% { transform: rotate(0); }
-  20% { transform: rotate(15deg); }
-  40% { transform: rotate(-15deg); }
-  60% { transform: rotate(10deg); }
-  80% { transform: rotate(-10deg); }
-  100% { transform: rotate(0); }
 }
 </style>

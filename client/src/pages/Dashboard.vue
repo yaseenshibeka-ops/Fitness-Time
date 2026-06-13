@@ -5,17 +5,14 @@
       <!-- Stat Cards -->
       <div class="row g-3 mb-4">
         <div v-for="card in statCards" :key="card.label" class="col-xl-3 col-sm-6 col-12">
-          <div class="glass-card stat-card p-4 h-100 position-relative overflow-hidden">
-            <div class="d-flex align-items-center justify-content-between">
-              <div>
-                <div class="text-muted small fw-semibold uppercase tracking-wider mb-1">{{ card.label }}</div>
-                <div class="fs-2 fw-extrabold text-white mt-1">{{ card.value }}</div>
-              </div>
-              <div class="stat-icon-wrapper" :style="{ background: card.colorBg }">
-                <i :class="card.icon" :style="{ color: card.colorText }"></i>
-              </div>
+          <div class="dash-card stat-card d-flex align-items-center gap-3 p-4">
+            <div class="stat-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded">
+              <i :class="card.icon"></i>
             </div>
-            <div class="card-glow" :style="{ background: `radial-gradient(circle, ${card.colorText} 0%, transparent 70%)` }"></div>
+            <div class="min-w-0">
+              <div class="stat-label text-uppercase small mb-1">{{ card.label }}</div>
+              <div class="stat-value">{{ card.value }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -23,21 +20,21 @@
       <!-- Charts Section -->
       <div class="row g-3 mb-4">
         <div class="col-xl-6 col-12">
-          <div class="glass-card chart-card p-4">
+          <div class="dash-card p-4">
             <div class="d-flex align-items-center justify-content-between mb-3">
-              <h6 class="fw-bold mb-0 text-light"><i class="bi bi-graph-up me-2 text-cyan"></i>Weight Progress</h6>
-              <span class="badge bg-glass text-cyan">Last 30 Days</span>
+              <h6 class="fw-bold mb-0"><i class="bi bi-graph-up me-2"></i>Weight Progress</h6>
+              <span class="badge badge-outline">Last 30 Days</span>
             </div>
-            <div class="chart-container" style="height:250px;"><canvas ref="weightChart"></canvas></div>
+            <div style="height:250px;"><canvas ref="weightChart"></canvas></div>
           </div>
         </div>
         <div class="col-xl-6 col-12">
-          <div class="glass-card chart-card p-4">
+          <div class="dash-card p-4">
             <div class="d-flex align-items-center justify-content-between mb-3">
-              <h6 class="fw-bold mb-0 text-light"><i class="bi bi-fire me-2 text-primary"></i>Calories Burned</h6>
-              <span class="badge bg-glass text-primary">Daily Burn</span>
+              <h6 class="fw-bold mb-0"><i class="bi bi-fire me-2"></i>Calories Burned</h6>
+              <span class="badge badge-outline">Daily Burn</span>
             </div>
-            <div class="chart-container" style="height:250px;"><canvas ref="caloriesChart"></canvas></div>
+            <div style="height:250px;"><canvas ref="caloriesChart"></canvas></div>
           </div>
         </div>
       </div>
@@ -45,49 +42,46 @@
       <!-- Row 3: Goals, Workout, Subscription -->
       <div class="row g-3">
         <div class="col-lg-4 col-md-6 col-12">
-          <div class="glass-card p-4 h-100">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-              <h6 class="fw-bold mb-0 text-light"><i class="bi bi-pie-chart me-2 text-purple"></i>Workout Split</h6>
-            </div>
-            <div class="chart-container mb-3" style="height:200px;"><canvas ref="workoutChart"></canvas></div>
+          <div class="dash-card p-4 h-100">
+            <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2"></i>Workout Split</h6>
+            <div style="height:200px;"><canvas ref="workoutChart"></canvas></div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 col-12">
-          <div class="glass-card p-4 h-100">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-              <h6 class="fw-bold mb-0 text-light"><i class="bi bi-bullseye me-2 text-accent"></i>Active Goals</h6>
-              <span class="badge bg-accent text-dark fw-bold">{{ goals.filter(g => g.status === 'completed').length }}/{{ goals.length }} Done</span>
+          <div class="dash-card p-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h6 class="fw-bold mb-0"><i class="bi bi-bullseye me-2"></i>Active Goals</h6>
+              <span class="badge badge-outline">{{ goals.filter(g => g.status === 'completed').length }}/{{ goals.length }} Done</span>
             </div>
-            <div v-if="goals.length" class="goals-list">
-              <div v-for="g in goals" :key="g.goal_id" class="mb-3 p-2 rounded bg-surface-hover">
+            <div v-if="goals.length" class="d-flex flex-column gap-2">
+              <div v-for="g in goals" :key="g.goal_id" class="goal-row p-2 rounded">
                 <div class="d-flex justify-content-between small mb-1">
-                  <span class="fw-semibold text-light">{{ g.goal_type }}</span>
+                  <span class="fw-semibold">{{ g.goal_type }}</span>
                   <span class="text-muted">{{ g.current_value }} / {{ g.target_value }}</span>
                 </div>
-                <div class="progress" style="height:6px; background: rgba(255, 255, 255, 0.05);">
-                  <div class="progress-bar progress-bar-striped progress-bar-animated animate-progress" :class="g.status==='completed'?'bg-success':'bg-cyan'" :style="{width:Math.min(100,(g.current_value/g.target_value)*100)+'%'}"></div>
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" :class="g.status==='completed' ? 'fill-done' : 'fill-active'" :style="{width:Math.min(100,(g.current_value/g.target_value)*100)+'%'}"></div>
                 </div>
               </div>
             </div>
-            <div v-else class="text-muted text-center py-4">No goals configured yet.</div>
+            <div v-else class="text-center py-4 text-muted">No goals configured yet.</div>
           </div>
         </div>
         <div class="col-lg-4 col-md-12 col-12">
-          <div class="glass-card p-4 h-100 position-relative overflow-hidden subscription-card">
-            <div class="card-glow" style="background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);"></div>
-            <h6 class="fw-bold mb-4 text-light"><i class="bi bi-star me-2 text-warning"></i>Membership Plan</h6>
-            <div v-if="sub" class="d-flex flex-column h-100 justify-content-between">
-              <div>
-                <div class="fs-3 fw-bold text-warning mb-1">{{ sub.plan_type }}</div>
-                <span class="badge bg-success-glow text-success px-3 py-2 rounded-pill mb-3">Active Member</span>
-                <div class="text-muted small mt-2">Expires: {{ new Date(sub.end_date).toLocaleDateString() }}</div>
+          <div class="dash-card p-4 h-100 d-flex flex-column">
+            <h6 class="fw-bold mb-3"><i class="bi bi-star me-2"></i>Membership Plan</h6>
+            <div v-if="sub" class="flex-grow-1 d-flex flex-column">
+              <div class="flex-grow-1">
+                <div class="plan-type mb-1">{{ sub.plan_type }}</div>
+                <span class="badge badge-active mb-3">Active Member</span>
+                <div class="text-muted small">Expires: {{ new Date(sub.end_date).toLocaleDateString() }}</div>
               </div>
-              <router-link to="/dashboard/subscription" class="btn btn-outline-warning btn-sm w-100 mt-4 py-2">Manage Subscription</router-link>
+              <router-link to="/dashboard/subscription" class="btn btn-sm btn-outline w-100 mt-3 py-2">Manage Subscription</router-link>
             </div>
-            <div v-else class="text-muted text-center py-4 d-flex flex-column justify-content-center align-items-center h-100">
-              <i class="bi bi-shield-slash fs-1 text-muted mb-2" style="color: var(--text-muted);"></i>
-              <p>No active plan subscription</p>
-              <router-link to="/dashboard/subscription" class="btn btn-primary btn-sm px-4 mt-2">Subscribe Now</router-link>
+            <div v-else class="flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center text-muted gap-2">
+              <i class="bi bi-shield-slash fs-1"></i>
+              <p class="mb-0">No active plan subscription</p>
+              <router-link to="/dashboard/subscription" class="btn btn-sm btn-primary px-4 mt-2">Subscribe Now</router-link>
             </div>
           </div>
         </div>
@@ -133,10 +127,10 @@ onMounted(async () => {
 
     const s = statsRes.data.stats
     statCards.value = [
-      { label: 'Current Weight', value: s.currentWeight ? s.currentWeight + ' kg' : '--', icon: 'bi bi-person', colorText: '#06B6D4', colorBg: 'rgba(6, 182, 212, 0.1)' },
-      { label: 'Workouts (30d)', value: s.totalMinutes30Days + ' min', icon: 'bi bi-activity', colorText: '#8B5CF6', colorBg: 'rgba(139, 92, 246, 0.1)' },
-      { label: 'Calories (30d)', value: s.totalCalories30Days.toLocaleString(), icon: 'bi bi-fire', colorText: '#6366F1', colorBg: 'rgba(99, 102, 241, 0.1)' },
-      { label: 'Goals Met', value: goals.value.filter(g => g.status === 'completed').length + '/' + goals.value.length, icon: 'bi bi-bullseye', colorText: '#10B981', colorBg: 'rgba(16, 185, 129, 0.1)' },
+      { label: 'Current Weight', value: s.currentWeight ? s.currentWeight + ' kg' : '--', icon: 'bi bi-person' },
+      { label: 'Workouts (30d)', value: s.totalMinutes30Days + ' min', icon: 'bi bi-activity' },
+      { label: 'Calories (30d)', value: s.totalCalories30Days.toLocaleString(), icon: 'bi bi-fire' },
+      { label: 'Goals Met', value: goals.value.filter(g => g.status === 'completed').length + '/' + goals.value.length, icon: 'bi bi-bullseye' },
     ]
 
     await nextTick()
@@ -255,65 +249,106 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.fw-extrabold {
-  font-weight: 800;
-}
-.text-cyan {
-  color: #06B6D4 !important;
-}
-.text-purple {
-  color: #8B5CF6 !important;
-}
-.bg-glass {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-.bg-success-glow {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.15);
-}
-.bg-surface-hover {
-  background: rgba(255, 255, 255, 0.02);
-  transition: background 0.2s ease;
-}
-.bg-surface-hover:hover {
-  background: rgba(255, 255, 255, 0.04);
-}
-.stat-icon-wrapper {
-  width: 48px;
-  height: 48px;
+.dash-card {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  transition: border-color 0.2s;
+}
+.dash-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.stat-card {
+  min-height: 90px;
+}
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--primary);
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+.stat-label {
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-light);
+  line-height: 1.2;
+}
+
+.badge-outline {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+.badge-active {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--success);
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+.goal-row {
+  background: rgba(255, 255, 255, 0.03);
+  transition: background 0.15s;
+}
+.goal-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.progress-bar-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.fill-active {
+  background: var(--primary);
+}
+.fill-done {
+  background: var(--success);
+}
+
+.plan-type {
   font-size: 1.25rem;
-  transition: transform 0.3s ease;
+  font-weight: 700;
+  color: var(--warning);
 }
-.stat-card:hover .stat-icon-wrapper {
-  transform: scale(1.1) rotate(5deg);
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-light);
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.15s, border-color 0.15s;
 }
-.card-glow {
-  position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  opacity: 0.15;
-  filter: blur(40px);
-  pointer-events: none;
-  transition: opacity 0.3s;
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
 }
-.stat-card:hover .card-glow {
-  opacity: 0.25;
+
+h6 i {
+  color: var(--primary);
+  opacity: 0.8;
 }
-.chart-card {
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-.subscription-card {
-  background: linear-gradient(135deg, rgba(25, 20, 40, 0.4), rgba(18, 24, 41, 0.7));
-}
-.animate-progress {
-  transition: width 0.6s ease;
+.min-w-0 {
+  min-width: 0;
 }
 </style>

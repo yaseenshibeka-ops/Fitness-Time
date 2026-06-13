@@ -2,107 +2,89 @@
   <div>
     <!-- Top Header & Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-      <h5 class="fw-bold mb-0 text-light">
-        <i class="bi bi-graph-up text-cyan me-2"></i>Fitness Progress Tracking
+      <h5 class="fw-bold mb-0">
+        <i class="bi bi-graph-up me-2"></i>Fitness Progress Tracking
       </h5>
-      <button class="btn btn-primary px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#progressModal" @click="openAdd">
+      <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#progressModal" @click="openAdd">
         <i class="bi bi-plus-lg me-1"></i> Add Record
       </button>
     </div>
 
     <!-- Summary Statistics -->
     <div v-if="!loading && progress.length" class="row g-3 mb-4">
-      <!-- Latest Weight Card -->
       <div class="col-md-3 col-sm-6">
-        <div class="glass-card stat-card p-3 h-100 position-relative overflow-hidden">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="text-muted small fw-semibold uppercase tracking-wider mb-1">Latest Weight</div>
-              <div class="fs-3 fw-bold text-white mt-1">{{ latestWeight ? latestWeight + ' kg' : '--' }}</div>
-              <div v-if="weightChange !== null" class="small mt-2" :class="weightChange <= 0 ? 'text-success' : 'text-warning'">
-                <i :class="weightChange <= 0 ? 'bi bi-arrow-down' : 'bi bi-arrow-up'"></i>
-                {{ Math.abs(weightChange).toFixed(1) }} kg trend
-              </div>
-            </div>
-            <div class="stat-icon-wrapper" style="background: rgba(6, 182, 212, 0.1);">
-              <i class="bi bi-person text-cyan"></i>
+        <div class="stat-card d-flex align-items-center gap-3 p-3">
+          <div class="stat-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded">
+            <i class="bi bi-person"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="stat-label text-uppercase small mb-1">Latest Weight</div>
+            <div class="stat-value">{{ latestWeight ? latestWeight + ' kg' : '--' }}</div>
+            <div v-if="weightChange !== null" class="stat-trend mt-1" :class="weightChange <= 0 ? 'trend-down' : 'trend-up'">
+              <i :class="weightChange <= 0 ? 'bi bi-arrow-down' : 'bi bi-arrow-up'"></i>
+              {{ Math.abs(weightChange).toFixed(1) }} kg
             </div>
           </div>
-          <div class="card-glow" style="background: radial-gradient(circle, #06B6D4 0%, transparent 70%);"></div>
         </div>
       </div>
 
-      <!-- Latest Body Fat Card -->
       <div class="col-md-3 col-sm-6">
-        <div class="glass-card stat-card p-3 h-100 position-relative overflow-hidden">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="text-muted small fw-semibold uppercase tracking-wider mb-1">Body Fat %</div>
-              <div class="fs-3 fw-bold text-white mt-1">{{ latestBodyFat ? latestBodyFat + '%' : '--' }}</div>
-              <div v-if="bodyFatChange !== null" class="small mt-2" :class="bodyFatChange <= 0 ? 'text-success' : 'text-warning'">
-                <i :class="bodyFatChange <= 0 ? 'bi bi-arrow-down' : 'bi bi-arrow-up'"></i>
-                {{ Math.abs(bodyFatChange).toFixed(1) }}% trend
-              </div>
-            </div>
-            <div class="stat-icon-wrapper" style="background: rgba(139, 92, 246, 0.1);">
-              <i class="bi bi-percent text-purple"></i>
+        <div class="stat-card d-flex align-items-center gap-3 p-3">
+          <div class="stat-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded">
+            <i class="bi bi-percent"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="stat-label text-uppercase small mb-1">Body Fat %</div>
+            <div class="stat-value">{{ latestBodyFat ? latestBodyFat + '%' : '--' }}</div>
+            <div v-if="bodyFatChange !== null" class="stat-trend mt-1" :class="bodyFatChange <= 0 ? 'trend-down' : 'trend-up'">
+              <i :class="bodyFatChange <= 0 ? 'bi bi-arrow-down' : 'bi bi-arrow-up'"></i>
+              {{ Math.abs(bodyFatChange).toFixed(1) }}%
             </div>
           </div>
-          <div class="card-glow" style="background: radial-gradient(circle, #8B5CF6 0%, transparent 70%);"></div>
         </div>
       </div>
 
-      <!-- Total Workouts -->
       <div class="col-md-3 col-sm-6">
-        <div class="glass-card stat-card p-3 h-100 position-relative overflow-hidden">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="text-muted small fw-semibold uppercase tracking-wider mb-1">Workouts Logged</div>
-              <div class="fs-3 fw-bold text-white mt-1">{{ workoutCount }}</div>
-              <div class="text-muted small mt-2">Active Tracker</div>
-            </div>
-            <div class="stat-icon-wrapper" style="background: rgba(16, 185, 129, 0.1);">
-              <i class="bi bi-activity text-success"></i>
-            </div>
+        <div class="stat-card d-flex align-items-center gap-3 p-3">
+          <div class="stat-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded">
+            <i class="bi bi-activity"></i>
           </div>
-          <div class="card-glow" style="background: radial-gradient(circle, #10B981 0%, transparent 70%);"></div>
+          <div class="min-w-0">
+            <div class="stat-label text-uppercase small mb-1">Workouts Logged</div>
+            <div class="stat-value">{{ workoutCount }}</div>
+            <div class="stat-trend mt-1">Active Tracker</div>
+          </div>
         </div>
       </div>
 
-      <!-- Total Calories -->
       <div class="col-md-3 col-sm-6">
-        <div class="glass-card stat-card p-3 h-100 position-relative overflow-hidden">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="text-muted small fw-semibold uppercase tracking-wider mb-1">Calories Burned</div>
-              <div class="fs-3 fw-bold text-white mt-1">{{ totalCalories.toLocaleString() }} kcal</div>
-              <div class="text-muted small mt-2">Cumulative</div>
-            </div>
-            <div class="stat-icon-wrapper" style="background: rgba(239, 68, 68, 0.1);">
-              <i class="bi bi-fire text-danger"></i>
-            </div>
+        <div class="stat-card d-flex align-items-center gap-3 p-3">
+          <div class="stat-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded">
+            <i class="bi bi-fire"></i>
           </div>
-          <div class="card-glow" style="background: radial-gradient(circle, #EF4444 0%, transparent 70%);"></div>
+          <div class="min-w-0">
+            <div class="stat-label text-uppercase small mb-1">Calories Burned</div>
+            <div class="stat-value">{{ totalCalories.toLocaleString() }} kcal</div>
+            <div class="stat-trend mt-1">Cumulative</div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Chart Panel -->
-    <div v-if="!loading && progress.length" class="glass-card p-4 mb-4">
+    <div v-if="!loading && progress.length" class="dash-card p-4 mb-4">
       <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-        <h6 class="fw-bold mb-0 text-light"><i class="bi bi-activity text-cyan me-2"></i>Progress Visualizer</h6>
+        <h6 class="fw-bold mb-0"><i class="bi bi-activity me-2"></i>Progress Visualizer</h6>
         <div class="d-flex align-items-center gap-2">
-          <!-- Metric selector -->
           <div class="btn-group btn-group-sm">
-            <button class="btn btn-outline-light" :class="{ active: chartMetric === 'weight' }" @click="setMetric('weight')">Weight</button>
-            <button class="btn btn-outline-light" :class="{ active: chartMetric === 'bodyfat' }" @click="setMetric('bodyfat')">Body Fat</button>
-            <button class="btn btn-outline-light" :class="{ active: chartMetric === 'calories' }" @click="setMetric('calories')">Calories</button>
+            <button class="btn btn-sm btn-metric" :class="{ active: chartMetric === 'weight' }" @click="setMetric('weight')">Weight</button>
+            <button class="btn btn-sm btn-metric" :class="{ active: chartMetric === 'bodyfat' }" @click="setMetric('bodyfat')">Body Fat</button>
+            <button class="btn btn-sm btn-metric" :class="{ active: chartMetric === 'calories' }" @click="setMetric('calories')">Calories</button>
           </div>
-          <!-- Timeframe filter -->
-          <select class="form-select form-select-sm bg-dark text-white border-secondary" v-model="timeframe" @change="updateChartData" style="width:130px;">
-            <option value="7">Last 7 Days</option>
-            <option value="30">Last 30 Days</option>
-            <option value="90">Last 90 Days</option>
+          <select class="form-select form-select-sm timeframe-select" v-model="timeframe" @change="updateChartData" style="width:120px;">
+            <option value="7">7 Days</option>
+            <option value="30">30 Days</option>
+            <option value="90">90 Days</option>
             <option value="all">All Time</option>
           </select>
         </div>
@@ -112,16 +94,16 @@
       </div>
     </div>
 
-    <!-- Main Content State handler -->
+    <!-- Main Content -->
     <div v-if="loading" class="text-center py-5">
       <div class="spinner"></div>
     </div>
     <div v-else>
-      <div v-if="progress.length" class="glass-card p-0 overflow-hidden mb-3">
+      <div v-if="progress.length" class="dash-card p-0 mb-3">
         <div class="table-responsive">
-          <table class="table table-dark table-hover mb-0 align-middle">
+          <table class="table table-hover mb-0 align-middle">
             <thead>
-              <tr class="text-muted small">
+              <tr class="small">
                 <th class="ps-3">Date</th>
                 <th>Weight</th>
                 <th>Body Fat</th>
@@ -137,27 +119,23 @@
               <tr v-for="p in progress" :key="p.progress_id" class="progress-row">
                 <td class="ps-3 fw-semibold">{{ new Date(p.recorded_date).toLocaleDateString() }}</td>
                 <td>
-                  <span class="badge bg-glass text-cyan px-2 py-1">
-                    {{ p.weight_kg ? p.weight_kg + ' kg' : '-' }}
-                  </span>
+                  <span class="badge badge-weight">{{ p.weight_kg ? p.weight_kg + ' kg' : '-' }}</span>
                 </td>
                 <td>{{ p.body_fat_pct ? p.body_fat_pct + '%' : '-' }}</td>
                 <td>
-                  <span v-if="p.workout_type" class="badge bg-secondary text-white px-2 py-1">
-                    {{ p.workout_type }}
-                  </span>
+                  <span v-if="p.workout_type" class="badge badge-workout">{{ p.workout_type }}</span>
                   <span v-else>-</span>
                 </td>
                 <td>{{ p.duration_minutes ? p.duration_minutes + ' min' : '-' }}</td>
                 <td>
-                  <span v-if="p.calories_burned" class="text-danger fw-semibold">
+                  <span v-if="p.calories_burned" class="text-calories fw-semibold">
                     <i class="bi bi-fire me-1"></i>{{ p.calories_burned }}
                   </span>
                   <span v-else>-</span>
                 </td>
                 <td>
-                  <span v-if="hasMeasurements(p)" class="text-info small" :title="getMeasurementsTitle(p)" style="cursor:help;">
-                    <i class="bi bi-rulers me-1"></i>Hover to view
+                  <span v-if="hasMeasurements(p)" class="text-muted small" :title="getMeasurementsTitle(p)" style="cursor:help;">
+                    <i class="bi bi-rulers me-1"></i>View
                   </span>
                   <span v-else class="text-muted small">-</span>
                 </td>
@@ -165,10 +143,10 @@
                   <small class="text-muted" :title="p.notes">{{ truncateNotes(p.notes) }}</small>
                 </td>
                 <td class="text-end pe-3">
-                  <button class="btn btn-sm btn-outline-info me-2 transition-scale" data-bs-toggle="modal" data-bs-target="#progressModal" @click="openEdit(p)" title="Edit Record">
+                  <button class="btn btn-sm btn-row-action me-1" data-bs-toggle="modal" data-bs-target="#progressModal" @click="openEdit(p)" title="Edit Record">
                     <i class="bi bi-pencil"></i>
                   </button>
-                  <button class="btn btn-sm btn-outline-danger transition-scale" @click="deleteProgress(p.progress_id)" title="Delete Record">
+                  <button class="btn btn-sm btn-row-action btn-row-danger" @click="deleteProgress(p.progress_id)" title="Delete Record">
                     <i class="bi bi-trash"></i>
                   </button>
                 </td>
@@ -177,8 +155,8 @@
           </table>
         </div>
       </div>
-      <div v-else class="glass-card p-5 text-center text-muted">
-        <i class="bi bi-graph-up display-4 mb-3 text-cyan" style="display:block;"></i>
+      <div v-else class="dash-card p-5 text-center text-muted">
+        <i class="bi bi-graph-up display-4 mb-3" style="display:block; opacity:0.4;"></i>
         <h5>No progress records yet</h5>
         <p class="small">Start tracking your weight, body fat, measurements, and workouts to see your analytics here!</p>
         <button class="btn btn-primary btn-sm px-4 mt-2" data-bs-toggle="modal" data-bs-target="#progressModal" @click="openAdd">
@@ -189,37 +167,35 @@
 
     <!-- Modal Form -->
     <div class="modal fade" id="progressModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dark modal-dialog-centered">
-        <div class="modal-content shadow-lg" style="background:var(--surface); color:var(--text-light); border: 1px solid rgba(255, 255, 255, 0.08);">
-          <div class="modal-header border-0 pb-0">
-            <h5 class="fw-bold text-white mb-0">
-              <i class="bi bi-calendar-check text-cyan me-2"></i>{{ editingId ? 'Edit Progress Record' : 'Add Progress Record' }}
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header pb-0">
+            <h5 class="fw-bold mb-0">
+              <i class="bi bi-calendar-check me-2"></i>{{ editingId ? 'Edit Progress Record' : 'Add Progress Record' }}
             </h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body py-3">
             <form @submit.prevent="save" class="row g-3">
-              <!-- Essential metrics -->
               <div class="col-6">
-                <label class="form-label small text-muted">Date <span class="text-danger">*</span></label>
+                <label class="form-label small">Date <span class="text-danger">*</span></label>
                 <input class="form-control" type="date" v-model="form.recorded_date" required>
               </div>
               <div class="col-6">
-                <label class="form-label small text-muted">Weight (kg)</label>
+                <label class="form-label small">Weight (kg)</label>
                 <input class="form-control" type="number" step="0.1" v-model.number="form.weight_kg" placeholder="e.g. 72.5">
               </div>
               <div class="col-6">
-                <label class="form-label small text-muted">Body Fat %</label>
+                <label class="form-label small">Body Fat %</label>
                 <input class="form-control" type="number" step="0.1" v-model.number="form.body_fat_pct" placeholder="e.g. 18.4">
               </div>
               <div class="col-6">
-                <label class="form-label small text-muted">Height (cm)</label>
+                <label class="form-label small">Height (cm)</label>
                 <input class="form-control" type="number" step="0.1" v-model.number="form.height_cm" placeholder="e.g. 175">
               </div>
 
-              <!-- Workout metrics -->
               <div class="col-6">
-                <label class="form-label small text-muted">Workout Type</label>
+                <label class="form-label small">Workout Type</label>
                 <select class="form-select" v-model="form.workout_type">
                   <option value="">None / Rest Day</option>
                   <option>Cardio</option>
@@ -234,50 +210,47 @@
                 </select>
               </div>
               <div class="col-3">
-                <label class="form-label small text-muted">Duration (m)</label>
+                <label class="form-label small">Duration (m)</label>
                 <input class="form-control" type="number" v-model.number="form.duration_minutes" placeholder="Min">
               </div>
               <div class="col-3">
-                <label class="form-label small text-muted">Calories</label>
+                <label class="form-label small">Calories</label>
                 <input class="form-control" type="number" v-model.number="form.calories_burned" placeholder="kcal">
               </div>
 
-              <!-- Collapsible Body Measurements -->
               <div class="col-12 mt-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center" @click="showMeasurements = !showMeasurements">
+                <button type="button" class="btn btn-sm btn-outline w-100 text-start d-flex justify-content-between align-items-center" @click="showMeasurements = !showMeasurements">
                   <span><i class="bi bi-rulers me-2"></i>Body Measurements (Optional)</span>
                   <i :class="showMeasurements ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
                 </button>
-                <div v-show="showMeasurements" class="row g-2 mt-2 p-2 rounded bg-dark-glow border border-secondary-subtle">
+                <div v-show="showMeasurements" class="row g-2 mt-2 p-2 rounded measurements-panel">
                   <div class="col-6">
-                    <label class="form-label small text-muted">Chest (cm)</label>
+                    <label class="form-label small">Chest (cm)</label>
                     <input class="form-control form-control-sm" type="number" step="0.1" v-model.number="form.chest_cm" placeholder="Chest">
                   </div>
                   <div class="col-6">
-                    <label class="form-label small text-muted">Waist (cm)</label>
+                    <label class="form-label small">Waist (cm)</label>
                     <input class="form-control form-control-sm" type="number" step="0.1" v-model.number="form.waist_cm" placeholder="Waist">
                   </div>
                   <div class="col-6">
-                    <label class="form-label small text-muted">Hips (cm)</label>
+                    <label class="form-label small">Hips (cm)</label>
                     <input class="form-control form-control-sm" type="number" step="0.1" v-model.number="form.hips_cm" placeholder="Hips">
                   </div>
                   <div class="col-6">
-                    <label class="form-label small text-muted">Biceps (cm)</label>
+                    <label class="form-label small">Biceps (cm)</label>
                     <input class="form-control form-control-sm" type="number" step="0.1" v-model.number="form.biceps_cm" placeholder="Biceps">
                   </div>
                 </div>
               </div>
 
-              <!-- Notes -->
               <div class="col-12 mt-2">
-                <label class="form-label small text-muted">Notes / Journal</label>
+                <label class="form-label small">Notes / Journal</label>
                 <textarea class="form-control" rows="2" v-model="form.notes" placeholder="How did you feel today?"></textarea>
               </div>
 
-              <!-- Actions -->
-              <div class="col-12 d-flex justify-content-end gap-2 border-0 pt-3 mt-3">
-                <button type="button" class="btn btn-outline-light px-3" data-bs-dismiss="modal" id="closeProgressModal">Cancel</button>
-                <button type="submit" class="btn btn-primary px-4" :disabled="submitting">
+              <div class="col-12 d-flex justify-content-end gap-2 pt-3 mt-3 border-0">
+                <button type="button" class="btn btn-sm btn-outline px-3" data-bs-dismiss="modal" id="closeProgressModal">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm px-4" :disabled="submitting">
                   <span v-if="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
                   {{ submitting ? 'Saving...' : 'Save Record' }}
                 </button>
@@ -556,53 +529,166 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.text-cyan {
-  color: #06B6D4 !important;
+.dash-card {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
 }
-.text-purple {
-  color: #8B5CF6 !important;
+.dash-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
 }
-.bg-glass {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  min-height: 80px;
 }
-.bg-dark-glow {
-  background: rgba(0, 0, 0, 0.2);
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--primary);
+  font-size: 1rem;
 }
-.stat-icon-wrapper {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
+.stat-label {
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  font-weight: 600;
 }
-.card-glow {
-  position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  opacity: 0.1;
-  filter: blur(35px);
-  pointer-events: none;
-  transition: opacity 0.3s;
+.stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-light);
+  line-height: 1.2;
 }
-.stat-card:hover .card-glow {
-  opacity: 0.18;
+.stat-trend {
+  font-size: 0.75rem;
+  font-weight: 500;
 }
-.transition-scale {
-  transition: transform 0.15s ease, background-color 0.15s ease;
+.trend-down { color: var(--success); }
+.trend-up { color: var(--warning); }
+
+.btn-metric {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
-.transition-scale:hover {
-  transform: scale(1.05);
+.btn-metric:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-light);
+}
+.btn-metric.active {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: var(--primary);
+}
+.timeframe-select {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  font-size: 0.8rem;
+}
+.timeframe-select:focus {
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: none;
+}
+
+table.table {
+  color: var(--text-light);
+}
+table.table thead th {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.75rem;
+}
+table.table tbody td {
+  border-color: rgba(255, 255, 255, 0.04);
+  padding: 0.75rem;
+  vertical-align: middle;
 }
 .progress-row {
-  transition: background-color 0.2s ease;
+  transition: background 0.15s;
 }
 .progress-row:hover {
-  background: rgba(255, 255, 255, 0.02) !important;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.badge-weight {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.badge-workout {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-light);
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.text-calories {
+  color: #f97316;
+}
+
+.btn-row-action {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-row-action:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-light);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.btn-row-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+.modal-content {
+  background: var(--surface);
+  color: var(--text-light);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+.modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-light);
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.measurements-panel {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
 }
 </style>
