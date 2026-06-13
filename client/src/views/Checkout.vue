@@ -138,7 +138,7 @@
 
             <!-- Collapsed Summary -->
             <div v-if="currentStep > 1" class="collapsed-summary">
-              <p>{{ form.fullName }} · {{ form.phone }}</p>
+              <p>{{ form.fullName }} آ· {{ form.phone }}</p>
               <p>{{ form.address }}, {{ form.province }}</p>
             </div>
           </div>
@@ -198,7 +198,7 @@
               >
                 <span v-if="submitting" class="btn-spinner"></span>
                 <span v-else class="material-symbols-outlined">lock</span>
-                {{ submitting ? 'Processing...' : `Place Order — ${total.toLocaleString()} RWF` }}
+                {{ submitting ? 'Processing...' : `Place Order â€” ${total.toLocaleString()} RWF` }}
               </button>
             </div>
           </div>
@@ -370,8 +370,8 @@ const errors = ref({
 const paymentMethods = [
   { id: 'mtn_momo', label: 'MTN MoMo', desc: 'Instant payment', bgColor: '#fef3c7', textColor: '#b45309', icon: '', iconText: 'MTN' },
   { id: 'airtel_money', label: 'Airtel Money', desc: 'Instant payment', bgColor: '#fee2e2', textColor: '#dc2626', icon: '', iconText: 'AIRT' },
-  { id: 'cash_on_delivery', label: 'Cash on Delivery', desc: 'Pay on arrival', bgColor: 'var(--glass-bg)', textColor: 'var(--text-secondary)', icon: 'payments', iconText: '' },
-  { id: 'bank_transfer', label: 'Bank Transfer', desc: 'Manual transfer', bgColor: 'var(--glass-bg)', textColor: 'var(--text-secondary)', icon: 'account_balance', iconText: '' },
+  { id: 'cash_on_delivery', label: 'Cash on Delivery', desc: 'Pay on arrival', bgColor: 'var(--glass)', textColor: 'var(--text-muted)', icon: 'payments', iconText: '' },
+  { id: 'bank_transfer', label: 'Bank Transfer', desc: 'Manual transfer', bgColor: 'var(--glass)', textColor: 'var(--text-muted)', icon: 'account_balance', iconText: '' },
   { id: 'paypal', label: 'PayPal', desc: 'International', bgColor: '#dbeafe', textColor: '#2563eb', icon: '', iconText: 'Pay' },
 ]
 
@@ -522,7 +522,7 @@ onMounted(async () => {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 600;
@@ -530,7 +530,7 @@ onMounted(async () => {
   transition: color 0.2s;
 }
 .back-to-cart:hover {
-  color: var(--accent-primary);
+  color: var(--primary);
 }
 .back-to-cart .material-symbols-outlined {
   font-size: 18px;
@@ -538,11 +538,11 @@ onMounted(async () => {
 .checkout-header h1 {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0;
 }
 .checkout-subtitle {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 0.95rem;
   margin: 0.25rem 0 0;
 }
@@ -555,8 +555,8 @@ onMounted(async () => {
   gap: 0;
   margin-bottom: 2.5rem;
   padding: 1.25rem;
-  background: var(--glass-bg);
-  border: 1px solid var(--border-color);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
 }
 .step {
@@ -571,8 +571,8 @@ onMounted(async () => {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--border-color);
-  color: var(--text-secondary);
+  background: var(--glass-border);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -581,7 +581,7 @@ onMounted(async () => {
   transition: all 0.3s ease;
 }
 .step.active .step-circle {
-  background: var(--accent-primary);
+  background: var(--primary);
   color: white;
 }
 .step.completed .step-circle {
@@ -594,13 +594,13 @@ onMounted(async () => {
 .step-label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
-.step.active .step-label { color: var(--text-primary); }
+.step.active .step-label { color: var(--text-light); }
 .step-line {
   width: 60px;
   height: 2px;
-  background: var(--border-color);
+  background: var(--glass-border);
   margin: 0 0.75rem;
   transition: background 0.3s ease;
 }
@@ -614,15 +614,15 @@ onMounted(async () => {
 .spinner-ring {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--accent-primary);
+  border: 3px solid var(--glass-border);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto 1rem;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .checkout-loading p {
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 /* Empty State */
@@ -642,16 +642,16 @@ onMounted(async () => {
 }
 .empty-icon .material-symbols-outlined {
   font-size: 36px;
-  color: var(--accent-primary);
+  color: var(--primary);
 }
 .empty-state h2 {
   font-size: 1.4rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0 0 0.5rem;
 }
 .empty-state p {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin: 0 0 1.25rem;
 }
 
@@ -670,8 +670,8 @@ onMounted(async () => {
   gap: 1rem;
 }
 .form-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--border-color);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   border-radius: 20px;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -698,14 +698,14 @@ onMounted(async () => {
 .form-card-title h2 {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0;
 }
 .step-badge {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: var(--accent-primary);
+  background: var(--primary);
   color: white;
   display: flex;
   align-items: center;
@@ -723,7 +723,7 @@ onMounted(async () => {
 .edit-link {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--accent-primary);
+  color: var(--primary);
   cursor: pointer;
 }
 .form-card-body {
@@ -734,7 +734,7 @@ onMounted(async () => {
 }
 .collapsed-summary p {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin: 0;
   line-height: 1.5;
 }
@@ -756,7 +756,7 @@ onMounted(async () => {
 .form-group label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 .required { color: #ef4444; }
 .form-group input,
@@ -764,10 +764,10 @@ onMounted(async () => {
 .form-group textarea {
   width: 100%;
   padding: 0.7rem 0.9rem;
-  border: 1.5px solid var(--border-color);
+  border: 1.5px solid var(--glass-border);
   border-radius: 12px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  background: var(--dark);
+  color: var(--text-light);
   font-size: 0.9rem;
   font-family: inherit;
   outline: none;
@@ -777,7 +777,7 @@ onMounted(async () => {
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: var(--accent-primary);
+  border-color: var(--primary);
 }
 .input-error {
   border-color: #ef4444 !important;
@@ -800,7 +800,7 @@ onMounted(async () => {
   padding: 0.85rem;
   border: none;
   border-radius: 14px;
-  background: var(--accent-primary);
+  background: var(--primary);
   color: white;
   font-weight: 700;
   font-size: 0.95rem;
@@ -826,18 +826,18 @@ onMounted(async () => {
 .payment-option {
   position: relative;
   padding: 1rem;
-  border: 2px solid var(--border-color);
+  border: 2px solid var(--glass-border);
   border-radius: 16px;
-  background: var(--bg-primary);
+  background: var(--dark);
   cursor: pointer;
   text-align: center;
   transition: all 0.2s ease;
 }
 .payment-option:hover {
-  border-color: var(--accent-primary);
+  border-color: var(--primary);
 }
 .payment-option.selected {
-  border-color: var(--accent-primary);
+  border-color: var(--primary);
   background: var(--accent-primary-light, rgba(124,58,237,0.04));
 }
 .payment-icon {
@@ -859,12 +859,12 @@ onMounted(async () => {
 .payment-label {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0 0 0.15rem;
 }
 .payment-desc {
   font-size: 0.7rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin: 0;
 }
 .selected-check {
@@ -874,7 +874,7 @@ onMounted(async () => {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--accent-primary);
+  background: var(--primary);
   color: white;
   display: flex;
   align-items: center;
@@ -886,36 +886,36 @@ onMounted(async () => {
 
 .payment-extra-card {
   padding: 1rem;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
+  background: var(--dark);
+  border: 1px solid var(--glass-border);
   border-radius: 14px;
   margin-bottom: 1rem;
 }
 .payment-extra-card label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   display: block;
   margin-bottom: 0.35rem;
 }
 .payment-extra-card input {
   width: 100%;
   padding: 0.65rem 0.85rem;
-  border: 1.5px solid var(--border-color);
+  border: 1.5px solid var(--glass-border);
   border-radius: 10px;
-  background: var(--glass-bg);
-  color: var(--text-primary);
+  background: var(--glass);
+  color: var(--text-light);
   font-size: 0.9rem;
   font-family: inherit;
   outline: none;
   box-sizing: border-box;
 }
 .payment-extra-card input:focus {
-  border-color: var(--accent-primary);
+  border-color: var(--primary);
 }
 .hint {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin: 0.4rem 0 0;
 }
 
@@ -925,10 +925,10 @@ onMounted(async () => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 12px;
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.85rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -948,7 +948,7 @@ onMounted(async () => {
   padding: 1rem;
   border: none;
   border-radius: 16px;
-  background: var(--accent-primary);
+  background: var(--primary);
   color: white;
   font-weight: 800;
   font-size: 1.05rem;
@@ -977,8 +977,8 @@ onMounted(async () => {
 
 /* Order Summary */
 .order-summary-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--border-color);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   border-radius: 20px;
   padding: 1.5rem;
   position: sticky;
@@ -987,7 +987,7 @@ onMounted(async () => {
 .order-summary-card h2 {
   font-size: 1.15rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0 0 1rem;
 }
 .summary-items {
@@ -1016,7 +1016,7 @@ onMounted(async () => {
 .summary-item-name {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -1024,45 +1024,45 @@ onMounted(async () => {
 }
 .summary-item-qty {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin: 0;
 }
 .summary-item-price {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0;
   flex-shrink: 0;
 }
 .summary-divider {
   height: 1px;
-  background: var(--border-color);
+  background: var(--glass-border);
   margin: 1rem 0;
 }
 .summary-row {
   display: flex;
   justify-content: space-between;
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
 .summary-total-row {
   font-size: 1.1rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin-bottom: 0;
 }
 .summary-total-row span:last-child {
-  color: var(--accent-primary);
+  color: var(--primary);
 }
 .text-green { color: #10b981; font-weight: 600; }
-.text-accent { color: var(--accent-primary); }
+.text-accent { color: var(--primary); }
 
 /* Trust Signals */
 .trust-signals {
   margin-top: 1.25rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -1072,11 +1072,11 @@ onMounted(async () => {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 .trust-signal .material-symbols-outlined {
   font-size: 16px;
-  color: var(--accent-primary);
+  color: var(--primary);
 }
 
 /* Buttons */
@@ -1085,7 +1085,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 0.8rem 1.5rem;
-  background: var(--accent-primary);
+  background: var(--primary);
   color: white;
   border-radius: 14px;
   font-weight: 700;
@@ -1101,15 +1101,15 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 0.8rem 1.5rem;
-  border: 2px solid var(--accent-primary);
-  color: var(--accent-primary);
+  border: 2px solid var(--primary);
+  color: var(--primary);
   border-radius: 14px;
   font-weight: 700;
   text-decoration: none;
   transition: all 0.2s ease;
 }
 .secondary-btn:hover {
-  background: var(--accent-primary);
+  background: var(--primary);
   color: white;
 }
 
@@ -1126,19 +1126,20 @@ onMounted(async () => {
   padding: 1.5rem;
 }
 .success-modal {
-  background: var(--bg-primary);
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
   border-radius: 24px;
   padding: 2.5rem;
   max-width: 480px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.3);
 }
 .success-icon-wrap {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: #dcfce7;
+  background: rgba(16, 185, 129, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1147,7 +1148,7 @@ onMounted(async () => {
 }
 .success-icon-wrap .material-symbols-outlined {
   font-size: 40px;
-  color: #16a34a;
+  color: var(--success);
 }
 @keyframes success-pop {
   0% { transform: scale(0); }
@@ -1157,18 +1158,18 @@ onMounted(async () => {
 .success-modal h2 {
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0 0 0.5rem;
 }
 .success-modal > p {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 0.95rem;
   margin: 0 0 1.25rem;
 }
 
 .success-details {
-  background: var(--glass-bg);
-  border: 1px solid var(--border-color);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 1.25rem;
   text-align: left;
@@ -1178,7 +1179,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--accent-primary);
+  color: var(--primary);
   font-weight: 700;
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
@@ -1188,13 +1189,13 @@ onMounted(async () => {
 }
 .detail-text {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin: 0;
   line-height: 1.5;
 }
 .bank-details p {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin: 0.25rem 0;
 }
 
@@ -1257,3 +1258,4 @@ onMounted(async () => {
   .step-line { width: 30px; }
 }
 </style>
+

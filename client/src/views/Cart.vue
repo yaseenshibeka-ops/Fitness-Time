@@ -177,7 +177,7 @@ function changeQty(item, delta) {
     try {
       await api.put(`/cart/items/${item.cart_item_id}`, { quantity: newQty })
     } catch (e) {
-      // Rollback on error — reload actual state
+      // Rollback on error â€” reload actual state
       await loadCart()
     } finally {
       busyItems.value[item.cart_item_id] = false
@@ -228,12 +228,12 @@ onMounted(loadCart)
 .cart-header h1 {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0;
 }
 .cart-subtitle {
   font-size: 0.95rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin: 0.25rem 0 0;
 }
 .continue-shopping-btn {
@@ -242,17 +242,17 @@ onMounted(loadCart)
   gap: 0.4rem;
   padding: 0.6rem 1.2rem;
   border-radius: 12px;
-  border: 1.5px solid var(--border-color);
-  background: var(--glass-bg);
-  color: var(--text-primary);
+  border: 1.5px solid var(--glass-border);
+  background: var(--glass);
+  color: var(--text-light);
   font-weight: 600;
   font-size: 0.85rem;
   text-decoration: none;
   transition: all 0.2s ease;
 }
 .continue-shopping-btn:hover {
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
+  border-color: var(--primary);
+  color: var(--primary);
   transform: translateY(-1px);
 }
 .continue-shopping-btn .material-symbols-outlined {
@@ -267,15 +267,15 @@ onMounted(loadCart)
 .spinner-ring {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--accent-primary);
+  border: 3px solid var(--glass-border);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto 1rem;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .cart-loading p {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 0.95rem;
 }
 
@@ -298,13 +298,13 @@ onMounted(loadCart)
   align-items: center;
   gap: 1.25rem;
   padding: 1.25rem;
-  background: var(--glass-bg);
-  border: 1px solid var(--border-color);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   transition: all 0.3s ease;
 }
 .cart-item-card:hover {
-  border-color: var(--accent-primary);
+  border-color: var(--primary);
   box-shadow: 0 4px 20px rgba(0,0,0,0.06);
 }
 .cart-item-img {
@@ -321,7 +321,7 @@ onMounted(loadCart)
 .cart-item-name {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0 0 0.3rem;
   white-space: nowrap;
   overflow: hidden;
@@ -329,7 +329,7 @@ onMounted(loadCart)
 }
 .cart-item-price {
   font-size: 0.9rem;
-  color: var(--accent-primary);
+  color: var(--primary);
   font-weight: 600;
 }
 .cart-item-controls {
@@ -344,10 +344,10 @@ onMounted(loadCart)
   display: flex;
   align-items: center;
   gap: 0;
-  border: 1.5px solid var(--border-color);
+  border: 1.5px solid var(--glass-border);
   border-radius: 12px;
   overflow: hidden;
-  background: var(--bg-primary);
+  background: var(--dark);
 }
 .qty-btn {
   display: flex;
@@ -357,12 +357,12 @@ onMounted(loadCart)
   height: 36px;
   border: none;
   background: transparent;
-  color: var(--text-primary);
+  color: var(--text-light);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 .qty-btn:hover:not(:disabled) {
-  background: var(--accent-primary);
+  background: var(--primary);
   color: white;
 }
 .qty-btn:disabled {
@@ -377,7 +377,7 @@ onMounted(loadCart)
   text-align: center;
   font-weight: 700;
   font-size: 0.95rem;
-  color: var(--text-primary);
+  color: var(--text-light);
   transition: opacity 0.2s;
 }
 .qty-updating {
@@ -387,7 +387,7 @@ onMounted(loadCart)
 .cart-item-total {
   font-size: 1rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--text-light);
   min-width: 100px;
   text-align: right;
 }
@@ -401,12 +401,12 @@ onMounted(loadCart)
   border: none;
   border-radius: 10px;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 .remove-btn:hover:not(:disabled) {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
 }
 .remove-btn:disabled {
@@ -419,8 +419,8 @@ onMounted(loadCart)
 
 /* Summary Card */
 .cart-summary-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--border-color);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   border-radius: 20px;
   padding: 1.75rem;
   position: sticky;
@@ -429,24 +429,24 @@ onMounted(loadCart)
 .cart-summary-card h2 {
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0 0 1.25rem;
 }
 .summary-row {
   display: flex;
   justify-content: space-between;
   font-size: 0.95rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   padding: 0.5rem 0;
 }
 .summary-total {
   font-size: 1.15rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--text-light);
   padding: 0.75rem 0;
 }
 .summary-total span:last-child {
-  color: var(--accent-primary);
+  color: var(--primary);
 }
 .free-delivery {
   color: #10b981;
@@ -457,7 +457,7 @@ onMounted(loadCart)
   align-items: center;
   gap: 0.5rem;
   font-size: 0.8rem;
-  color: var(--accent-primary);
+  color: var(--primary);
   background: var(--accent-primary-light, rgba(124,58,237,0.06));
   padding: 0.6rem 0.8rem;
   border-radius: 10px;
@@ -468,7 +468,7 @@ onMounted(loadCart)
 }
 .summary-divider {
   height: 1px;
-  background: var(--border-color);
+  background: var(--glass-border);
   margin: 0.75rem 0;
 }
 
@@ -480,7 +480,7 @@ onMounted(loadCart)
   width: 100%;
   padding: 0.9rem;
   border-radius: 14px;
-  background: var(--accent-primary);
+  background: var(--primary);
   color: white;
   font-weight: 700;
   font-size: 1rem;
@@ -501,18 +501,18 @@ onMounted(loadCart)
   gap: 1rem;
   margin-top: 1.25rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--glass-border);
 }
 .trust-badge {
   display: flex;
   align-items: center;
   gap: 0.4rem;
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 .trust-badge .material-symbols-outlined {
   font-size: 16px;
-  color: var(--accent-primary);
+  color: var(--primary);
 }
 
 /* Empty Cart */
@@ -533,7 +533,7 @@ onMounted(loadCart)
 }
 .empty-cart-icon .material-symbols-outlined {
   font-size: 48px;
-  color: var(--accent-primary);
+  color: var(--primary);
 }
 @keyframes pulse-icon {
   0%, 100% { transform: scale(1); opacity: 0.8; }
@@ -542,11 +542,11 @@ onMounted(loadCart)
 .empty-cart h2 {
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--text-light);
   margin: 0 0 0.5rem;
 }
 .empty-cart p {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin: 0 0 1.5rem;
 }
 .browse-btn {
@@ -555,7 +555,7 @@ onMounted(loadCart)
   gap: 0.5rem;
   padding: 0.8rem 1.5rem;
   border-radius: 14px;
-  background: var(--accent-primary);
+  background: var(--primary);
   color: white;
   font-weight: 700;
   text-decoration: none;
@@ -606,3 +606,4 @@ onMounted(loadCart)
   }
 }
 </style>
+
