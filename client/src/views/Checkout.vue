@@ -453,7 +453,8 @@ async function placeOrder() {
       deliveryAddress: `${form.value.address}, ${form.value.province || 'Rwanda'}`,
     })
 
-    const order = orderRes.data.order
+    const order = orderRes.data?.order || orderRes.data?.data?.order || orderRes.order
+    if (!order) throw new Error('Invalid order response from server')
     orderRef.value = order.orderReference
 
     // Step 2: Initiate Payment
@@ -464,19 +465,21 @@ async function placeOrder() {
       phoneNumber: (selectedPayment.value === 'mtn_momo' || selectedPayment.value === 'airtel_money') ? paymentPhone.value : null,
     })
 
-    paymentResult.value = payRes.data
+    paymentResult.value = payRes.data?.data || payRes.data || payRes
     cart.value = null
     cartStore.fetchCount()
     currentStep.value = 3
     showSuccess.value = true
   } catch (e) {
-    const msg = e?.message || e?.response?.data?.message || ''
+    const msg = e?.response?.data?.message || e?.message || e?.data?.message || ''
     if (msg.includes('stock')) {
       error.value = 'Some items in your cart are out of stock. Please update your cart.'
     } else if (msg.includes('Cart is empty')) {
       error.value = 'Your cart is empty. Please add items first.'
+    } else if (msg) {
+      error.value = msg
     } else {
-      error.value = msg || 'Failed to place order. Please try again.'
+      error.value = 'Failed to place order. Please try again.'
     }
   } finally {
     submitting.value = false
@@ -491,7 +494,7 @@ function closeSuccess() {
 onMounted(async () => {
   try {
     const res = await api.get('/cart')
-    cart.value = res.data.cart
+    cart.value = res.data?.cart || res.data?.data?.cart || res.cart
     if (!cart.value?.items?.length) {
       loading.value = false
       return
