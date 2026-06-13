@@ -23,6 +23,7 @@ class OrderService {
         try {
             await connection.beginTransaction();
 
+            // 1. Create order
             const [orderResult] = await connection.query(
                 `INSERT INTO orders (user_id, order_reference, full_name, email, phone, delivery_address, subtotal, delivery_fee, grand_total, status)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
@@ -30,10 +31,22 @@ class OrderService {
             );
             const orderId = orderResult.insertId;
 
-            for (const item of cart.items) {
-                const [product] = await connection.query('SELECT stock_quantity FROM products WHERE product_id = ? FOR UPDATE', [item.product_id]);
+            // 2. Lock all relevant products in one query to prevent race conditions
+            const productIds = cart.items.map(item => item.product_id);
+            const placeholders = productIds.map(() => '?').join(',');
+            const [products] = await connection.query(
+                `SELECT product_id, stock_quantity FROM products WHERE product_id IN (${placeholders}) FOR UPDATE`,
+                productIds
+            );
 
-                if (product.length === 0 || product[0].stock_quantity < item.quantity) {
+            // Build a map for fast lookup
+            const stockMap = {};
+            products.forEach(p => { stockMap[p.product_id] = p.stock_quantity; });
+
+            // 3. Validate stock and insert order items
+            for (const item of cart.items) {
+                const currentStock = stockMap[item.product_id];
+                if (currentStock === undefined || currentStock < item.quantity) {
                     throw { statusCode: 400, message: `Insufficient stock for product: ${item.name}` };
                 }
 
@@ -49,6 +62,7 @@ class OrderService {
                 );
             }
 
+            // 4. Clear the cart
             await connection.query('DELETE FROM cart_items WHERE cart_id = ?', [cart.cartId]);
 
             await connection.commit();
@@ -76,38 +90,46 @@ class OrderService {
         const params = [userId];
         const countParams = [userId];
 
-        let query = 'SELECT o.* FROM orders o WHERE o.user_id = ?';
-        let countQuery = 'SELECT COUNT(*) as total FROM orders o WHERE o.user_id = ?';
+        let baseWhere = 'WHERE o.user_id = ?';
 
         if (status) {
-            query += ' AND o.status = ?';
-            countQuery += ' AND o.status = ?';
+            baseWhere += ' AND o.status = ?';
             params.push(status);
             countParams.push(status);
         }
 
         if (search) {
-            query += ' AND (o.order_reference LIKE ? OR o.full_name LIKE ?)';
-            countQuery += ' AND (o.order_reference LIKE ? OR o.full_name LIKE ?)';
+            baseWhere += ' AND (o.order_reference LIKE ? OR o.full_name LIKE ?)';
             const term = `%${search}%`;
             params.push(term, term);
             countParams.push(term, term);
         }
 
-        query += ' ORDER BY o.created_at DESC LIMIT ? OFFSET ?';
+        // Single query with LEFT JOIN to fetch orders + payment info — eliminates N+1 problem
+        const query = `
+            SELECT o.*, 
+                   pay.payment_method, pay.payment_status, pay.transaction_reference
+            FROM orders o
+            LEFT JOIN payments pay ON pay.order_id = o.order_id
+            ${baseWhere}
+            ORDER BY o.created_at DESC
+            LIMIT ? OFFSET ?
+        `;
         params.push(limit, offset);
 
-        const [orders] = await pool.query(query, params);
+        const countQuery = `SELECT COUNT(*) as total FROM orders o ${baseWhere}`;
+
+        const [rows] = await pool.query(query, params);
         const [[{ total }]] = await pool.query(countQuery, countParams);
 
-        // Attach payment info to each order
-        for (const order of orders) {
-            const [payments] = await pool.query(
-                'SELECT payment_method, payment_status, transaction_reference FROM payments WHERE order_id = ? LIMIT 1',
-                [order.order_id]
-            );
-            order.payment = payments.length > 0 ? payments[0] : null;
-        }
+        // Attach payment as a nested object for API compatibility
+        const orders = rows.map(row => {
+            const { payment_method, payment_status, transaction_reference, ...order } = row;
+            order.payment = payment_method
+                ? { payment_method, payment_status, transaction_reference }
+                : null;
+            return order;
+        });
 
         return {
             orders,
@@ -118,8 +140,15 @@ class OrderService {
     }
 
     static async getOrderDetails(userId, orderId) {
+        // Fetch order + payment in a single query
         const [orders] = await pool.query(
-            'SELECT * FROM orders WHERE order_id = ? AND user_id = ?',
+            `SELECT o.*, 
+                    pay.payment_id, pay.payment_method, pay.payment_status, 
+                    pay.transaction_reference, pay.phone_number as pay_phone, 
+                    pay.amount as pay_amount, pay.payment_date
+             FROM orders o
+             LEFT JOIN payments pay ON pay.order_id = o.order_id
+             WHERE o.order_id = ? AND o.user_id = ?`,
             [orderId, userId]
         );
 
@@ -127,7 +156,11 @@ class OrderService {
             throw { statusCode: 404, message: 'Order not found' };
         }
 
-        const order = orders[0];
+        const row = orders[0];
+        const { payment_id, payment_method, payment_status, transaction_reference, pay_phone, pay_amount, payment_date, ...order } = row;
+        order.payment = payment_method
+            ? { payment_id, payment_method, payment_status, transaction_reference, phone_number: pay_phone, amount: pay_amount, payment_date }
+            : null;
 
         const [items] = await pool.query(
             `SELECT oi.*, p.name, p.image_url
@@ -138,13 +171,6 @@ class OrderService {
         );
 
         order.items = items;
-
-        // Attach payment info
-        const [payments] = await pool.query(
-            'SELECT * FROM payments WHERE order_id = ? LIMIT 1',
-            [orderId]
-        );
-        order.payment = payments.length > 0 ? payments[0] : null;
 
         return order;
     }

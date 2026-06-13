@@ -33,20 +33,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Static Files Setup - try multiple locations for the Vue build
-const distPaths = [
-  path.join(__dirname, '../api/public'),
-  path.join(__dirname, '../client/dist'),
-  path.join(process.cwd(), 'api/public'),
-  path.join(process.cwd(), 'client/dist'),
-];
-for (const p of distPaths) {
-  if (fs.existsSync(p)) {
-    app.use(express.static(p));
-  }
+// Static Files Setup - serve Vue build first, then legacy public
+const clientDistPath = path.join(__dirname, '../client/dist');
+const apiPublicPath = path.join(__dirname, '../api/public');
+const legacyPublicPath = path.join(__dirname, '../public');
+
+if (fs.existsSync(clientDistPath)) {
+    app.use(express.static(clientDistPath));
+} else if (fs.existsSync(apiPublicPath)) {
+    app.use(express.static(apiPublicPath));
 }
+
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-// Keep legacy public for backward compat
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(legacyPublicPath));
 
 // Routes
 const authRoutes = require('./routes/auth.routes');
@@ -80,15 +79,14 @@ app.get('*', (req, res) => {
     if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
         return res.status(404).json({ status: 'error', message: 'Not found' });
     }
-    // Try sending a static file; fallback to index.html
-    const indexPaths = [
-      path.join(__dirname, '../api/public/index.html'),
-      path.join(__dirname, '../client/dist/index.html'),
-      path.join(process.cwd(), 'api/public/index.html'),
-      path.join(process.cwd(), 'client/dist/index.html'),
-    ];
-    const indexPath = indexPaths.find(p => fs.existsSync(p));
-    res.sendFile(indexPath || path.join(__dirname, '../client/dist/index.html'));
+    
+    if (fs.existsSync(path.join(clientDistPath, 'index.html'))) {
+        res.sendFile(path.join(clientDistPath, 'index.html'));
+    } else if (fs.existsSync(path.join(apiPublicPath, 'index.html'))) {
+        res.sendFile(path.join(apiPublicPath, 'index.html'));
+    } else {
+        res.sendFile(path.join(legacyPublicPath, 'index.html'));
+    }
 });
 
 // Centralized Error Handler

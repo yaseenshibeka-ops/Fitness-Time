@@ -4,11 +4,11 @@
     <section class="max-w-container-max mx-auto px-margin-mobile md:px-lg py-xl grid grid-cols-1 md:grid-cols-2 gap-lg items-center">
       <div class="space-y-md">
         <span class="bg-primary-container text-on-primary-container px-sm py-xs rounded-full font-label-md text-label-md uppercase tracking-wider">Performance Matters</span>
-        <h1 class="font-display-lg text-display-lg text-on-surface">Transform Your Fitness Journey with FitTrack Rwanda</h1>
-        <p class="font-body-lg text-body-lg text-on-surface-variant">Shop premium fitness products, track your progress, and achieve your goals with Rwanda's leading athletic platform.</p>
+        <h1 class="font-display-lg text-display-lg text-[var(--text-light)]">Transform Your Fitness Journey with FitTrack Rwanda</h1>
+        <p class="font-body-lg text-body-lg text-[var(--text-muted)]">Shop premium fitness products, track your progress, and achieve your goals with Rwanda's leading athletic platform.</p>
         <div class="flex flex-wrap gap-md pt-sm">
           <router-link to="/products" class="bg-primary text-on-primary px-lg py-sm rounded-2xl font-headline-md text-headline-md hover-lift">Shop Now</router-link>
-          <router-link to="/register" class="border-2 border-on-surface text-on-surface px-lg py-sm rounded-2xl font-headline-md text-headline-md hover-lift">Start Tracking</router-link>
+          <router-link to="/register" class="border-2 border-[var(--text-light)] text-[var(--text-light)] px-lg py-sm rounded-2xl font-headline-md text-headline-md hover-lift">Start Tracking</router-link>
         </div>
       </div>
       <div class="relative">
@@ -32,12 +32,12 @@
     </section>
 
     <!-- Best-Selling Products Grid -->
-    <section class="bg-surface-container-low py-xl">
+    <section class="bg-section-alt py-xl">
       <div class="max-w-container-max mx-auto px-margin-mobile md:px-lg">
         <div class="flex justify-between items-end mb-lg">
           <div>
-            <h2 class="font-headline-lg text-headline-lg">Best-Selling Gear</h2>
-            <p class="text-on-surface-variant font-body-md text-body-md">Top-rated items from our Rwanda community.</p>
+            <h2 class="font-headline-lg text-headline-lg text-[var(--text-light)]">Best-Selling Gear</h2>
+            <p class="text-[var(--text-muted)] font-body-md text-body-md">Top-rated items from our Rwanda community.</p>
           </div>
           <router-link class="text-primary font-label-md text-label-md flex items-center gap-xs" to="/products">View All Store <span class="material-symbols-outlined">arrow_forward</span></router-link>
         </div>
@@ -57,7 +57,7 @@
           </div>
         </div>
         <div v-else class="text-center py-5">
-          <p class="text-on-surface-variant font-body-md text-body-md">No products available yet. Check back soon!</p>
+          <p class="text-[var(--text-muted)] font-body-md text-body-md">No products available yet. Check back soon!</p>
           <router-link to="/products" class="text-primary font-label-md text-label-md">Browse All</router-link>
         </div>
       </div>
@@ -65,7 +65,7 @@
 
     <!-- Subscription Plans -->
     <section class="max-w-container-max mx-auto px-margin-mobile md:px-lg py-xl">
-      <h2 class="font-headline-lg text-headline-lg text-center mb-lg">Choose Your Path to Performance</h2>
+      <h2 class="font-headline-lg text-headline-lg text-center mb-lg text-[var(--text-light)]">Choose Your Path to Performance</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-lg max-w-4xl mx-auto">
         <div v-for="(plan, idx) in plans" :key="plan.name" class="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/30 subtle-shadow text-center space-y-md" :class="{ 'bg-on-surface text-surface border-2 border-primary-fixed scale-105 shadow-xl relative': idx === 1 }">
           <div v-if="idx === 1" class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-sm py-1 rounded-full text-caption font-bold">RECOMMENDED</div>

@@ -1,188 +1,264 @@
 <template>
-  <div class="pt-20">
-    <div class="max-w-container-max mx-auto px-margin-mobile md:px-lg py-xl">
+  <div class="checkout-page pt-20">
+    <div class="checkout-container">
       <!-- Header -->
-      <div class="mb-lg">
-        <h1 class="font-headline-lg text-headline-lg">Checkout</h1>
-        <p class="font-body-md text-body-md text-on-surface-variant">Complete your order with your preferred payment method.</p>
+      <div class="checkout-header">
+        <router-link to="/cart" class="back-to-cart">
+          <span class="material-symbols-outlined">arrow_back</span>
+          Back to Cart
+        </router-link>
+        <h1>Checkout</h1>
+        <p class="checkout-subtitle">Complete your order securely</p>
+      </div>
+
+      <!-- Progress Steps -->
+      <div class="progress-steps" v-if="!loading && cart?.items?.length">
+        <div class="step" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
+          <div class="step-circle">
+            <span class="material-symbols-outlined" v-if="currentStep > 1">check</span>
+            <span v-else>1</span>
+          </div>
+          <span class="step-label">Delivery</span>
+        </div>
+        <div class="step-line" :class="{ filled: currentStep > 1 }"></div>
+        <div class="step" :class="{ active: currentStep >= 2, completed: currentStep > 2 }">
+          <div class="step-circle">
+            <span class="material-symbols-outlined" v-if="currentStep > 2">check</span>
+            <span v-else>2</span>
+          </div>
+          <span class="step-label">Payment</span>
+        </div>
+        <div class="step-line" :class="{ filled: currentStep > 2 }"></div>
+        <div class="step" :class="{ active: currentStep >= 3 }">
+          <div class="step-circle">3</div>
+          <span class="step-label">Confirm</span>
+        </div>
       </div>
 
       <!-- Loading -->
-      <div v-if="loading" class="text-center py-xl">
-        <div class="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto"></div>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-md">Loading your cart...</p>
+      <div v-if="loading" class="checkout-loading">
+        <div class="spinner-ring"></div>
+        <p>Loading your cart...</p>
       </div>
 
       <!-- Empty Cart -->
-      <div v-else-if="!cart || !cart.items?.length" class="text-center py-xl">
-        <span class="material-symbols-outlined text-6xl text-on-surface-variant">shopping_cart</span>
-        <h2 class="font-headline-md text-headline-md mt-md">Your cart is empty</h2>
-        <p class="font-body-md text-body-md text-on-surface-variant">Add some products before checking out.</p>
-        <router-link to="/products" class="inline-block bg-primary text-on-primary px-lg py-sm rounded-2xl font-label-md text-label-md hover-lift mt-md">Browse Products</router-link>
+      <div v-else-if="!cart || !cart.items?.length" class="empty-state">
+        <div class="empty-icon">
+          <span class="material-symbols-outlined">shopping_cart</span>
+        </div>
+        <h2>Your cart is empty</h2>
+        <p>Add some products before checking out.</p>
+        <router-link to="/products" class="primary-btn">Browse Products</router-link>
       </div>
 
       <!-- Checkout Form -->
-      <div v-else class="grid grid-cols-1 lg:grid-cols-5 gap-lg">
-        <!-- Left: Delivery + Payment -->
-        <div class="lg:col-span-3 space-y-md">
+      <div v-else class="checkout-grid">
+        <!-- Left Column: Forms -->
+        <div class="checkout-forms">
           <!-- Step 1: Delivery Details -->
-          <div class="bg-surface-container-lowest p-md md:p-lg rounded-2xl border border-outline-variant/20 space-y-md">
-            <h2 class="font-headline-md text-headline-md flex items-center gap-sm">
-              <span class="w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-bold">1</span>
-              Delivery Details
-            </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
-              <div class="space-y-xs">
-                <label class="font-label-md text-label-md text-on-surface-variant">Full Name</label>
-                <input v-model="form.fullName" type="text" class="w-full bg-surface-container-high border border-outline-variant/50 rounded-xl px-md py-sm font-body-md text-body-md outline-none focus:border-primary transition-colors" placeholder="Your full name" required/>
+          <div class="form-card" :class="{ collapsed: currentStep > 1 }">
+            <div class="form-card-header" @click="currentStep > 1 && (currentStep = 1)">
+              <div class="form-card-title">
+                <span class="step-badge" :class="{ completed: currentStep > 1 }">
+                  <span class="material-symbols-outlined" v-if="currentStep > 1">check</span>
+                  <span v-else>1</span>
+                </span>
+                <h2>Delivery Details</h2>
               </div>
-              <div class="space-y-xs">
-                <label class="font-label-md text-label-md text-on-surface-variant">Email</label>
-                <input v-model="form.email" type="email" class="w-full bg-surface-container-high border border-outline-variant/50 rounded-xl px-md py-sm font-body-md text-body-md outline-none focus:border-primary transition-colors" placeholder="email@example.com" required/>
+              <span v-if="currentStep > 1" class="edit-link">Edit</span>
+            </div>
+
+            <div v-if="currentStep === 1" class="form-card-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Full Name <span class="required">*</span></label>
+                  <input
+                    v-model="form.fullName"
+                    type="text"
+                    placeholder="Your full name"
+                    :class="{ 'input-error': errors.fullName }"
+                    @blur="validateField('fullName')"
+                  />
+                  <span v-if="errors.fullName" class="field-error">{{ errors.fullName }}</span>
+                </div>
+                <div class="form-group">
+                  <label>Email <span class="required">*</span></label>
+                  <input
+                    v-model="form.email"
+                    type="email"
+                    placeholder="email@example.com"
+                    :class="{ 'input-error': errors.email }"
+                    @blur="validateField('email')"
+                  />
+                  <span v-if="errors.email" class="field-error">{{ errors.email }}</span>
+                </div>
+                <div class="form-group">
+                  <label>Phone Number <span class="required">*</span></label>
+                  <input
+                    v-model="form.phone"
+                    type="tel"
+                    placeholder="+250 7XX XXX XXX"
+                    :class="{ 'input-error': errors.phone }"
+                    @blur="validateField('phone')"
+                  />
+                  <span v-if="errors.phone" class="field-error">{{ errors.phone }}</span>
+                </div>
+                <div class="form-group">
+                  <label>Province <span class="required">*</span></label>
+                  <select
+                    v-model="form.province"
+                    :class="{ 'input-error': errors.province }"
+                    @blur="validateField('province')"
+                  >
+                    <option value="">Select province</option>
+                    <option value="Kigali">Kigali City</option>
+                    <option value="Eastern">Eastern Province</option>
+                    <option value="Western">Western Province</option>
+                    <option value="Northern">Northern Province</option>
+                    <option value="Southern">Southern Province</option>
+                  </select>
+                </div>
+                <div class="form-group full-width">
+                  <label>Delivery Address <span class="required">*</span></label>
+                  <textarea
+                    v-model="form.address"
+                    rows="2"
+                    placeholder="Street, building, landmark..."
+                    :class="{ 'input-error': errors.address }"
+                    @blur="validateField('address')"
+                  ></textarea>
+                  <span v-if="errors.address" class="field-error">{{ errors.address }}</span>
+                </div>
               </div>
-              <div class="space-y-xs">
-                <label class="font-label-md text-label-md text-on-surface-variant">Phone Number</label>
-                <input v-model="form.phone" type="tel" class="w-full bg-surface-container-high border border-outline-variant/50 rounded-xl px-md py-sm font-body-md text-body-md outline-none focus:border-primary transition-colors" placeholder="+250 7XX XXX XXX" required/>
-              </div>
-              <div class="space-y-xs">
-                <label class="font-label-md text-label-md text-on-surface-variant">Province</label>
-                <select v-model="form.province" class="w-full bg-surface-container-high border border-outline-variant/50 rounded-xl px-md py-sm font-body-md text-body-md outline-none focus:border-primary transition-colors">
-                  <option value="">Select province</option>
-                  <option value="Kigali">Kigali City</option>
-                  <option value="Eastern">Eastern Province</option>
-                  <option value="Western">Western Province</option>
-                  <option value="Northern">Northern Province</option>
-                  <option value="Southern">Southern Province</option>
-                </select>
-              </div>
-              <div class="sm:col-span-2 space-y-xs">
-                <label class="font-label-md text-label-md text-on-surface-variant">Delivery Address</label>
-                <textarea v-model="form.address" rows="2" class="w-full bg-surface-container-high border border-outline-variant/50 rounded-xl px-md py-sm font-body-md text-body-md outline-none focus:border-primary transition-colors resize-none" placeholder="Street, building, landmark..." required></textarea>
-              </div>
+              <button class="next-step-btn" @click="goToStep2">
+                Continue to Payment
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+
+            <!-- Collapsed Summary -->
+            <div v-if="currentStep > 1" class="collapsed-summary">
+              <p>{{ form.fullName }} · {{ form.phone }}</p>
+              <p>{{ form.address }}, {{ form.province }}</p>
             </div>
           </div>
 
           <!-- Step 2: Payment Method -->
-          <div class="bg-surface-container-lowest p-md md:p-lg rounded-2xl border border-outline-variant/20 space-y-md">
-            <h2 class="font-headline-md text-headline-md flex items-center gap-sm">
-              <span class="w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-bold">2</span>
-              Payment Method
-            </h2>
-
-            <!-- Phone input for mobile money -->
-            <div v-if="selectedPayment === 'mtn_momo' || selectedPayment === 'airtel_money'" class="bg-surface-container-high p-md rounded-xl space-y-sm">
-              <label class="font-label-md text-label-md text-on-surface-variant">MoMo Phone Number</label>
-              <input v-model="paymentPhone" type="tel" class="w-full bg-surface-container border border-outline-variant/50 rounded-xl px-md py-sm font-body-md text-body-md outline-none focus:border-primary transition-colors" placeholder="+250 7XX XXX XXX" required/>
-              <p class="text-caption font-caption text-on-surface-variant">You will receive a payment request on your phone.</p>
-            </div>
-
-            <!-- Bank Transfer details -->
-            <div v-if="selectedPayment === 'bank_transfer' && paymentResult" class="bg-surface-container-high p-md rounded-xl space-y-sm">
-              <h3 class="font-label-md text-label-md text-primary">Bank Transfer Details</h3>
-              <div class="space-y-xs font-body-md text-body-md">
-                <p><span class="text-on-surface-variant">Bank:</span> <strong>{{ paymentResult.bankDetails?.bankName }}</strong></p>
-                <p><span class="text-on-surface-variant">Account Name:</span> <strong>{{ paymentResult.bankDetails?.accountName }}</strong></p>
-                <p><span class="text-on-surface-variant">Account Number:</span> <strong class="text-primary">{{ paymentResult.bankDetails?.accountNumber }}</strong></p>
-                <p><span class="text-on-surface-variant">Reference:</span> <strong class="text-primary">{{ paymentResult.bankDetails?.reference }}</strong></p>
-              </div>
-              <div class="bg-primary/10 p-sm rounded-lg">
-                <p class="text-caption font-caption text-primary flex items-center gap-xs">
-                  <span class="material-symbols-outlined text-sm">info</span>
-                  Use the reference number as payment description. Your order will be confirmed once the transfer is verified.
-                </p>
+          <div class="form-card" :class="{ collapsed: currentStep > 2, disabled: currentStep < 2 }">
+            <div class="form-card-header">
+              <div class="form-card-title">
+                <span class="step-badge" :class="{ completed: currentStep > 2 }">
+                  <span class="material-symbols-outlined" v-if="currentStep > 2">check</span>
+                  <span v-else>2</span>
+                </span>
+                <h2>Payment Method</h2>
               </div>
             </div>
 
-            <!-- PayPal info -->
-            <div v-if="selectedPayment === 'paypal' && paymentResult" class="bg-surface-container-high p-md rounded-xl space-y-sm">
-              <p class="font-body-md text-body-md text-on-surface-variant">Click the button below to complete your payment via PayPal.</p>
-              <a :href="paymentResult.paypalUrl" target="_blank" class="inline-flex items-center gap-sm bg-[#0070ba] text-white px-lg py-sm rounded-2xl font-label-md text-label-md hover-lift">
-                <span class="text-lg font-bold">Pay</span><span class="text-lg font-bold text-[#c0e0ff]">Pal</span>
-                <span class="material-symbols-outlined">open_in_new</span>
-              </a>
-            </div>
+            <div v-if="currentStep === 2" class="form-card-body">
+              <!-- Payment Options Grid -->
+              <div class="payment-grid">
+                <button
+                  v-for="pm in paymentMethods"
+                  :key="pm.id"
+                  @click="selectPayment(pm.id)"
+                  class="payment-option"
+                  :class="{ selected: selectedPayment === pm.id }"
+                >
+                  <div class="payment-icon" :style="{ background: pm.bgColor }">
+                    <span v-if="pm.iconText" class="payment-icon-text" :style="{ color: pm.textColor }">{{ pm.iconText }}</span>
+                    <span v-else class="material-symbols-outlined" :style="{ color: pm.textColor }">{{ pm.icon }}</span>
+                  </div>
+                  <p class="payment-label">{{ pm.label }}</p>
+                  <p class="payment-desc">{{ pm.desc }}</p>
+                  <div v-if="selectedPayment === pm.id" class="selected-check">
+                    <span class="material-symbols-outlined">check</span>
+                  </div>
+                </button>
+              </div>
 
-            <!-- Payment options grid -->
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-md">
-              <button v-for="pm in paymentMethods" :key="pm.id" @click="selectPayment(pm.id)" class="relative p-md rounded-2xl border-2 text-center space-y-sm transition-all" :class="selectedPayment === pm.id ? 'border-primary bg-primary/5' : 'border-outline-variant/30 hover:border-outline-variant/60 bg-surface-container-high'">
-                <div class="w-10 h-10 mx-auto rounded-xl flex items-center justify-center" :class="pm.bg">
-                  <span v-if="pm.icon.startsWith('http')" class="text-xs font-bold" :class="pm.textColor">{{ pm.iconText }}</span>
-                  <span v-else class="material-symbols-outlined" :class="pm.textColor">{{ pm.icon }}</span>
-                </div>
-                <p class="font-label-md text-label-md">{{ pm.label }}</p>
-                <p class="text-caption font-caption text-on-surface-variant">{{ pm.desc }}</p>
-                <div v-if="selectedPayment === pm.id" class="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-                  <span class="material-symbols-outlined text-on-primary text-xs">check</span>
-                </div>
+              <!-- MoMo Phone Input -->
+              <div v-if="selectedPayment === 'mtn_momo' || selectedPayment === 'airtel_money'" class="payment-extra-card">
+                <label>MoMo Phone Number</label>
+                <input v-model="paymentPhone" type="tel" placeholder="+250 7XX XXX XXX" />
+                <p class="hint">You will receive a payment request on your phone.</p>
+              </div>
+
+              <!-- Error -->
+              <div v-if="error" class="error-banner">
+                <span class="material-symbols-outlined">error</span>
+                {{ error }}
+              </div>
+
+              <!-- Place Order Button -->
+              <button
+                @click="placeOrder"
+                :disabled="submitting || !selectedPayment"
+                class="place-order-btn"
+              >
+                <span v-if="submitting" class="btn-spinner"></span>
+                <span v-else class="material-symbols-outlined">lock</span>
+                {{ submitting ? 'Processing...' : `Place Order — ${total.toLocaleString()} RWF` }}
               </button>
             </div>
           </div>
-
-          <!-- Error -->
-          <div v-if="error" class="bg-error-container/20 text-error px-md py-sm rounded-xl font-label-md text-label-md flex items-center gap-sm">
-            <span class="material-symbols-outlined text-sm">error</span>
-            {{ error }}
-          </div>
-
-          <!-- Place Order Button -->
-          <button @click="placeOrder" :disabled="submitting || !selectedPayment" class="w-full bg-primary text-on-primary py-md rounded-2xl font-headline-md text-headline-md hover-lift flex items-center justify-center gap-sm" :class="{ 'opacity-60 cursor-not-allowed': submitting || !selectedPayment }">
-            <span v-if="submitting" class="w-5 h-5 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></span>
-            <span v-else class="material-symbols-outlined">lock</span>
-            {{ submitting ? 'Processing...' : `Place Order — ${total.toLocaleString()} RWF` }}
-          </button>
         </div>
 
-        <!-- Right: Order Summary -->
-        <div class="lg:col-span-2">
-          <div class="bg-surface-container-lowest p-md md:p-lg rounded-2xl border border-outline-variant/20 space-y-md sticky top-28">
-            <h2 class="font-headline-md text-headline-md">Order Summary</h2>
+        <!-- Right Column: Order Summary -->
+        <div class="order-summary-card">
+          <h2>Order Summary</h2>
 
-            <!-- Items -->
-            <div class="space-y-sm divide-y divide-outline-variant/10">
-              <div v-for="item in cart.items" :key="item.product_id" class="flex items-center gap-sm pt-sm first:pt-0">
-                <img :src="item.image_url || 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=60&h=60&fit=crop'" :alt="item.name" class="w-14 h-14 rounded-xl object-cover shrink-0" loading="lazy"/>
-                <div class="flex-1 min-w-0">
-                  <p class="font-label-md text-label-md truncate">{{ item.name }}</p>
-                  <p class="text-caption font-caption text-on-surface-variant">Qty: {{ item.quantity }}</p>
-                </div>
-                <p class="font-headline-md text-headline-md shrink-0">{{ Number(item.price * item.quantity).toLocaleString() }} RWF</p>
+          <div class="summary-items">
+            <div v-for="item in cart.items" :key="item.product_id" class="summary-item">
+              <img
+                :src="item.image_url || 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=60&h=60&fit=crop'"
+                :alt="item.name"
+                class="summary-item-img"
+                loading="lazy"
+              />
+              <div class="summary-item-info">
+                <p class="summary-item-name">{{ item.name }}</p>
+                <p class="summary-item-qty">Qty: {{ item.quantity }}</p>
               </div>
+              <p class="summary-item-price">{{ Number(item.price * item.quantity).toLocaleString() }} RWF</p>
             </div>
+          </div>
 
-            <!-- Totals -->
-            <div class="space-y-sm pt-sm border-t border-outline-variant/20">
-              <div class="flex justify-between font-body-md text-body-md">
-                <span class="text-on-surface-variant">Subtotal</span>
-                <span>{{ subtotal.toLocaleString() }} RWF</span>
-              </div>
-              <div class="flex justify-between font-body-md text-body-md">
-                <span class="text-on-surface-variant">Delivery Fee</span>
-                <span>{{ deliveryFee > 0 ? deliveryFee.toLocaleString() + ' RWF' : 'FREE' }}</span>
-              </div>
-              <div v-if="discount > 0" class="flex justify-between font-body-md text-body-md text-primary">
-                <span>Discount</span>
-                <span>-{{ discount.toLocaleString() }} RWF</span>
-              </div>
-              <div class="flex justify-between font-headline-md text-headline-md pt-sm border-t border-outline-variant/20">
-                <span>Total</span>
-                <span class="text-primary">{{ total.toLocaleString() }} RWF</span>
-              </div>
+          <div class="summary-divider"></div>
+
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>{{ subtotal.toLocaleString() }} RWF</span>
+          </div>
+          <div class="summary-row">
+            <span>Delivery Fee</span>
+            <span :class="{ 'text-green': deliveryFee === 0 }">{{ deliveryFee > 0 ? deliveryFee.toLocaleString() + ' RWF' : 'FREE' }}</span>
+          </div>
+          <div v-if="discount > 0" class="summary-row text-accent">
+            <span>Discount</span>
+            <span>-{{ discount.toLocaleString() }} RWF</span>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-row summary-total-row">
+            <span>Total</span>
+            <span>{{ total.toLocaleString() }} RWF</span>
+          </div>
+
+          <!-- Trust Signals -->
+          <div class="trust-signals">
+            <div class="trust-signal">
+              <span class="material-symbols-outlined">lock</span>
+              <span>Secure 256-bit SSL encrypted</span>
             </div>
-
-            <!-- Trust -->
-            <div class="space-y-sm bg-surface-container-high p-md rounded-xl">
-              <div class="flex items-center gap-sm text-caption font-caption text-on-surface-variant">
-                <span class="material-symbols-outlined text-sm text-primary">lock</span>
-                Secure 256-bit SSL encrypted checkout
-              </div>
-              <div class="flex items-center gap-sm text-caption font-caption text-on-surface-variant">
-                <span class="material-symbols-outlined text-sm text-primary">verified</span>
-                100% authentic products guaranteed
-              </div>
-              <div class="flex items-center gap-sm text-caption font-caption text-on-surface-variant">
-                <span class="material-symbols-outlined text-sm text-primary">autorenew</span>
-                14-day hassle-free return policy
-              </div>
+            <div class="trust-signal">
+              <span class="material-symbols-outlined">verified</span>
+              <span>100% authentic products</span>
+            </div>
+            <div class="trust-signal">
+              <span class="material-symbols-outlined">autorenew</span>
+              <span>14-day return policy</span>
             </div>
           </div>
         </div>
@@ -190,72 +266,65 @@
 
       <!-- Order Success Modal -->
       <Teleport to="body">
-        <div v-if="showSuccess" class="fixed inset-0 z-50 bg-on-surface/60 flex items-center justify-center p-md" @click.self="closeSuccess">
-          <div class="bg-surface rounded-2xl p-xl max-w-md w-full space-y-md text-center shadow-xl">
-            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <span class="material-symbols-outlined text-green-600 text-4xl">check_circle</span>
-            </div>
-            <h2 class="font-headline-lg text-headline-lg">Order Placed!</h2>
-            <p class="font-body-md text-body-md text-on-surface-variant">Your order <strong class="text-on-surface">#{{ orderRef }}</strong> has been placed successfully.</p>
+        <Transition name="modal">
+          <div v-if="showSuccess" class="modal-overlay" @click.self="closeSuccess">
+            <div class="success-modal">
+              <div class="success-icon-wrap">
+                <span class="material-symbols-outlined">check_circle</span>
+              </div>
+              <h2>Order Placed!</h2>
+              <p>Your order <strong>#{{ orderRef }}</strong> has been placed successfully.</p>
 
-            <!-- Payment-specific next steps -->
-            <div class="bg-surface-container-high p-md rounded-xl text-left space-y-sm">
-              <!-- MTN / Airtel Money -->
-              <template v-if="selectedPayment === 'mtn_momo' || selectedPayment === 'airtel_money'">
-                <div class="flex items-center gap-sm text-primary">
-                  <span class="material-symbols-outlined">phone_android</span>
-                  <span class="font-label-md text-label-md">Check Your Phone</span>
-                </div>
-                <p class="text-caption font-caption text-on-surface-variant">A payment request has been sent to <strong>{{ paymentPhone }}</strong>. Please approve the prompt on your phone to complete the payment.</p>
-              </template>
+              <!-- Payment-specific info -->
+              <div class="success-details">
+                <template v-if="selectedPayment === 'mtn_momo' || selectedPayment === 'airtel_money'">
+                  <div class="detail-header">
+                    <span class="material-symbols-outlined">phone_android</span>
+                    <span>Check Your Phone</span>
+                  </div>
+                  <p class="detail-text">A payment request has been sent to <strong>{{ paymentPhone }}</strong>. Please approve the prompt.</p>
+                </template>
 
-              <!-- Bank Transfer -->
-              <template v-if="selectedPayment === 'bank_transfer' && paymentResult">
-                <div class="flex items-center gap-sm text-primary">
-                  <span class="material-symbols-outlined">account_balance</span>
-                  <span class="font-label-md text-label-md">Bank Transfer Details</span>
-                </div>
-                <div class="space-y-1 text-caption font-caption">
-                  <p><span class="text-on-surface-variant">Bank:</span> <strong>{{ paymentResult.bankDetails?.bankName }}</strong></p>
-                  <p><span class="text-on-surface-variant">Account:</span> <strong>{{ paymentResult.bankDetails?.accountName }}</strong></p>
-                  <p><span class="text-on-surface-variant">Account No:</span> <strong class="text-primary">{{ paymentResult.bankDetails?.accountNumber }}</strong></p>
-                  <p><span class="text-on-surface-variant">Reference:</span> <strong class="text-primary">{{ paymentResult.bankDetails?.reference }}</strong></p>
-                </div>
-                <div class="bg-primary/10 p-sm rounded-lg text-caption font-caption text-primary flex items-start gap-xs">
-                  <span class="material-symbols-outlined text-sm">info</span>
-                  Use the reference number as payment description. Your order will be processed once the transfer is confirmed.
-                </div>
-              </template>
+                <template v-if="selectedPayment === 'bank_transfer' && paymentResult">
+                  <div class="detail-header">
+                    <span class="material-symbols-outlined">account_balance</span>
+                    <span>Bank Transfer Details</span>
+                  </div>
+                  <div class="bank-details">
+                    <p><span>Bank:</span> <strong>{{ paymentResult.bankDetails?.bankName }}</strong></p>
+                    <p><span>Account:</span> <strong>{{ paymentResult.bankDetails?.accountName }}</strong></p>
+                    <p><span>Account No:</span> <strong class="text-accent">{{ paymentResult.bankDetails?.accountNumber }}</strong></p>
+                    <p><span>Reference:</span> <strong class="text-accent">{{ paymentResult.bankDetails?.reference }}</strong></p>
+                  </div>
+                </template>
 
-              <!-- PayPal -->
-              <template v-if="selectedPayment === 'paypal' && paymentResult">
-                <div class="flex items-center gap-sm text-primary">
-                  <span class="material-symbols-outlined">open_in_new</span>
-                  <span class="font-label-md text-label-md">Complete via PayPal</span>
-                </div>
-                <p class="text-caption font-caption text-on-surface-variant">Click the button below to complete your payment through PayPal.</p>
-                <a :href="paymentResult.paypalUrl" target="_blank" class="flex items-center justify-center gap-sm bg-[#0070ba] text-white px-md py-sm rounded-xl font-label-md text-label-md hover-lift">
-                  <span class="text-lg font-bold">Pay</span><span class="text-lg font-bold text-[#c0e0ff]">Pal</span>
-                  <span class="material-symbols-outlined">open_in_new</span>
-                </a>
-              </template>
+                <template v-if="selectedPayment === 'paypal' && paymentResult">
+                  <div class="detail-header">
+                    <span class="material-symbols-outlined">open_in_new</span>
+                    <span>Complete via PayPal</span>
+                  </div>
+                  <a :href="paymentResult.paypalUrl" target="_blank" class="paypal-btn">
+                    <span>Pay</span><span class="paypal-pal">Pal</span>
+                    <span class="material-symbols-outlined">open_in_new</span>
+                  </a>
+                </template>
 
-              <!-- Cash on Delivery -->
-              <template v-if="selectedPayment === 'cash_on_delivery'">
-                <div class="flex items-center gap-sm text-primary">
-                  <span class="material-symbols-outlined">payments</span>
-                  <span class="font-label-md text-label-md">Pay on Delivery</span>
-                </div>
-                <p class="text-caption font-caption text-on-surface-variant">No payment needed now. Pay when your order arrives at your delivery address.</p>
-              </template>
-            </div>
+                <template v-if="selectedPayment === 'cash_on_delivery'">
+                  <div class="detail-header">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span>Pay on Delivery</span>
+                  </div>
+                  <p class="detail-text">No payment needed now. Pay when your order arrives.</p>
+                </template>
+              </div>
 
-            <div class="flex flex-col gap-sm pt-sm">
-              <router-link to="/dashboard/orders" class="bg-primary text-on-primary px-lg py-sm rounded-2xl font-label-md text-label-md hover-lift">View Order Details</router-link>
-              <router-link to="/products" class="border-2 border-primary text-primary px-lg py-sm rounded-2xl font-label-md text-label-md hover-lift">Continue Shopping</router-link>
+              <div class="success-actions">
+                <router-link to="/dashboard/orders" class="primary-btn">View Order Details</router-link>
+                <router-link to="/products" class="secondary-btn">Continue Shopping</router-link>
+              </div>
             </div>
           </div>
-        </div>
+        </Transition>
       </Teleport>
     </div>
   </div>
@@ -278,8 +347,8 @@ const selectedPayment = ref('')
 const paymentPhone = ref('')
 const showSuccess = ref(false)
 const orderRef = ref('')
-const paymentMsg = ref('')
 const paymentResult = ref(null)
+const currentStep = ref(1)
 
 const form = ref({
   fullName: auth.fullName || '',
@@ -289,13 +358,21 @@ const form = ref({
   address: '',
 })
 
+const errors = ref({
+  fullName: '',
+  email: '',
+  phone: '',
+  province: '',
+  address: '',
+})
+
 // Payment methods
 const paymentMethods = [
-  { id: 'mtn_momo', label: 'MTN MoMo', desc: 'Instant payment', bg: 'bg-yellow-100', textColor: 'text-yellow-700', icon: '', iconText: 'MTN' },
-  { id: 'airtel_money', label: 'Airtel Money', desc: 'Instant payment', bg: 'bg-red-100', textColor: 'text-red-700', icon: '', iconText: 'AIRT' },
-  { id: 'cash_on_delivery', label: 'Cash on Delivery', desc: 'Pay on arrival', bg: 'bg-surface-container-high', textColor: 'text-on-surface-variant', icon: 'payments' },
-  { id: 'bank_transfer', label: 'Bank Transfer', desc: 'Manual transfer', bg: 'bg-surface-container-high', textColor: 'text-on-surface-variant', icon: 'account_balance' },
-  { id: 'paypal', label: 'PayPal', desc: 'International', bg: 'bg-blue-100', textColor: 'text-blue-700', icon: '', iconText: 'Pay' },
+  { id: 'mtn_momo', label: 'MTN MoMo', desc: 'Instant payment', bgColor: '#fef3c7', textColor: '#b45309', icon: '', iconText: 'MTN' },
+  { id: 'airtel_money', label: 'Airtel Money', desc: 'Instant payment', bgColor: '#fee2e2', textColor: '#dc2626', icon: '', iconText: 'AIRT' },
+  { id: 'cash_on_delivery', label: 'Cash on Delivery', desc: 'Pay on arrival', bgColor: 'var(--glass-bg)', textColor: 'var(--text-secondary)', icon: 'payments', iconText: '' },
+  { id: 'bank_transfer', label: 'Bank Transfer', desc: 'Manual transfer', bgColor: 'var(--glass-bg)', textColor: 'var(--text-secondary)', icon: 'account_balance', iconText: '' },
+  { id: 'paypal', label: 'PayPal', desc: 'International', bgColor: '#dbeafe', textColor: '#2563eb', icon: '', iconText: 'Pay' },
 ]
 
 // Computed
@@ -304,9 +381,50 @@ const deliveryFee = computed(() => subtotal.value >= 50000 ? 0 : 2000)
 const discount = computed(() => 0)
 const total = computed(() => subtotal.value + deliveryFee.value - discount.value)
 
+// Validation
+function validateField(field) {
+  errors.value[field] = ''
+  const v = form.value[field]?.trim()
+
+  switch (field) {
+    case 'fullName':
+      if (!v) errors.value.fullName = 'Full name is required'
+      else if (v.length < 2) errors.value.fullName = 'Name must be at least 2 characters'
+      break
+    case 'email':
+      if (!v) errors.value.email = 'Email is required'
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) errors.value.email = 'Please enter a valid email'
+      break
+    case 'phone':
+      if (!v) errors.value.phone = 'Phone number is required'
+      else if (!/^[\+]?[0-9\s\-]{8,15}$/.test(v.replace(/\s/g, ''))) errors.value.phone = 'Please enter a valid phone number'
+      break
+    case 'province':
+      if (!v) errors.value.province = 'Please select a province'
+      break
+    case 'address':
+      if (!v) errors.value.address = 'Delivery address is required'
+      else if (v.length < 5) errors.value.address = 'Please provide a more detailed address'
+      break
+  }
+  return !errors.value[field]
+}
+
+function validateAllFields() {
+  const fields = ['fullName', 'email', 'phone', 'province', 'address']
+  return fields.every(f => validateField(f))
+}
+
+function goToStep2() {
+  if (validateAllFields()) {
+    currentStep.value = 2
+  }
+}
+
 function selectPayment(id) {
   selectedPayment.value = id
   paymentResult.value = null
+  error.value = ''
   if (id === 'mtn_momo' || id === 'airtel_money') {
     paymentPhone.value = form.value.phone || ''
   }
@@ -317,8 +435,8 @@ async function placeOrder() {
     error.value = 'Please select a payment method'
     return
   }
-  if (!form.value.fullName || !form.value.email || !form.value.phone || !form.value.address) {
-    error.value = 'Please fill in all delivery details'
+  if ((selectedPayment.value === 'mtn_momo' || selectedPayment.value === 'airtel_money') && !paymentPhone.value.trim()) {
+    error.value = 'Please enter your MoMo phone number'
     return
   }
 
@@ -342,26 +460,22 @@ async function placeOrder() {
       paymentMethod: selectedPayment.value,
       amount: total.value,
       orderId: order.orderId,
-      phoneNumber: selectedPayment.value === 'mtn_momo' || selectedPayment.value === 'airtel_money' ? paymentPhone.value : null,
+      phoneNumber: (selectedPayment.value === 'mtn_momo' || selectedPayment.value === 'airtel_money') ? paymentPhone.value : null,
     })
 
-    const payData = payRes.data
-    paymentResult.value = payData
-
-    if (selectedPayment.value === 'bank_transfer') {
-      paymentMsg.value = payData.message
-    } else if (selectedPayment.value === 'paypal') {
-      paymentMsg.value = 'Redirecting to PayPal...'
-    } else if (selectedPayment.value === 'cash_on_delivery') {
-      paymentMsg.value = 'Pay when you receive your order.'
-    } else {
-      paymentMsg.value = payData.message || 'Payment initiated successfully!'
-    }
-
+    paymentResult.value = payRes.data
     cart.value = null
+    currentStep.value = 3
     showSuccess.value = true
   } catch (e) {
-    error.value = e?.message || 'Failed to place order. Please try again.'
+    const msg = e?.message || e?.response?.data?.message || ''
+    if (msg.includes('stock')) {
+      error.value = 'Some items in your cart are out of stock. Please update your cart.'
+    } else if (msg.includes('Cart is empty')) {
+      error.value = 'Your cart is empty. Please add items first.'
+    } else {
+      error.value = msg || 'Failed to place order. Please try again.'
+    }
   } finally {
     submitting.value = false
   }
@@ -390,16 +504,756 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* Override Bootstrap interference */
-:deep(input), :deep(select), :deep(textarea), :deep(button) {
+.checkout-page {
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+.checkout-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* Header */
+.checkout-header {
+  margin-bottom: 2rem;
+}
+.back-to-cart {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  transition: color 0.2s;
+}
+.back-to-cart:hover {
+  color: var(--accent-primary);
+}
+.back-to-cart .material-symbols-outlined {
+  font-size: 18px;
+}
+.checkout-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+.checkout-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0.25rem 0 0;
+}
+
+/* Progress Steps */
+.progress-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2.5rem;
+  padding: 1.25rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+}
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+}
+.step.active { opacity: 1; }
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--border-color);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+.step.active .step-circle {
+  background: var(--accent-primary);
+  color: white;
+}
+.step.completed .step-circle {
+  background: #10b981;
+  color: white;
+}
+.step-circle .material-symbols-outlined {
+  font-size: 18px;
+}
+.step-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.step.active .step-label { color: var(--text-primary); }
+.step-line {
+  width: 60px;
+  height: 2px;
+  background: var(--border-color);
+  margin: 0 0.75rem;
+  transition: background 0.3s ease;
+}
+.step-line.filled { background: #10b981; }
+
+/* Loading */
+.checkout-loading {
+  text-align: center;
+  padding: 4rem 0;
+}
+.spinner-ring {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 1rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.checkout-loading p {
+  color: var(--text-secondary);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 5rem 2rem;
+}
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--accent-primary-light, rgba(124,58,237,0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+.empty-icon .material-symbols-outlined {
+  font-size: 36px;
+  color: var(--accent-primary);
+}
+.empty-state h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+.empty-state p {
+  color: var(--text-secondary);
+  margin: 0 0 1.25rem;
+}
+
+/* Grid */
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+/* Form Cards */
+.checkout-forms {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.form-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.form-card.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.form-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  cursor: default;
+}
+.form-card.collapsed .form-card-header {
+  cursor: pointer;
+}
+.form-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.form-card-title h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+.step-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.step-badge.completed {
+  background: #10b981;
+}
+.step-badge .material-symbols-outlined {
+  font-size: 16px;
+}
+.edit-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  cursor: pointer;
+}
+.form-card-body {
+  padding: 0 1.5rem 1.5rem;
+}
+.collapsed-summary {
+  padding: 0 1.5rem 1.25rem;
+}
+.collapsed-summary p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Form Elements */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.required { color: #ef4444; }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
   font-family: inherit;
-  line-height: inherit;
+  outline: none;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
 }
-.hover-lift {
-  transition: all 0.2s ease-in-out;
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent-primary);
 }
-.hover-lift:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.08);
+.input-error {
+  border-color: #ef4444 !important;
+}
+.field-error {
+  font-size: 0.75rem;
+  color: #ef4444;
+  font-weight: 500;
+}
+.form-group textarea {
+  resize: none;
+}
+
+.next-step-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.85rem;
+  border: none;
+  border-radius: 14px;
+  background: var(--accent-primary);
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-top: 1.25rem;
+  transition: all 0.2s ease;
+}
+.next-step-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(124,58,237,0.25);
+}
+.next-step-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* Payment Grid */
+.payment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.payment-option {
+  position: relative;
+  padding: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--bg-primary);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+.payment-option:hover {
+  border-color: var(--accent-primary);
+}
+.payment-option.selected {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary-light, rgba(124,58,237,0.04));
+}
+.payment-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+}
+.payment-icon-text {
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.payment-icon .material-symbols-outlined {
+  font-size: 22px;
+}
+.payment-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.15rem;
+}
+.payment-desc {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.selected-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.selected-check .material-symbols-outlined {
+  font-size: 14px;
+}
+
+.payment-extra-card {
+  padding: 1rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  margin-bottom: 1rem;
+}
+.payment-extra-card label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 0.35rem;
+}
+.payment-extra-card input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--glass-bg);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+.payment-extra-card input:focus {
+  border-color: var(--accent-primary);
+}
+.hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0.4rem 0 0;
+}
+
+/* Error */
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #dc2626;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.error-banner .material-symbols-outlined {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Place Order */
+.place-order-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 16px;
+  background: var(--accent-primary);
+  color: white;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.place-order-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(124,58,237,0.3);
+}
+.place-order-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.place-order-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+.btn-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* Order Summary */
+.order-summary-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: sticky;
+  top: 100px;
+}
+.order-summary-card h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+}
+.summary-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.summary-item-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.summary-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.summary-item-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.summary-item-qty {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.summary-item-price {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex-shrink: 0;
+}
+.summary-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 1rem 0;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+.summary-total-row {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0;
+}
+.summary-total-row span:last-child {
+  color: var(--accent-primary);
+}
+.text-green { color: #10b981; font-weight: 600; }
+.text-accent { color: var(--accent-primary); }
+
+/* Trust Signals */
+.trust-signals {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.trust-signal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+.trust-signal .material-symbols-outlined {
+  font-size: 16px;
+  color: var(--accent-primary);
+}
+
+/* Buttons */
+.primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.5rem;
+  background: var(--accent-primary);
+  color: white;
+  border-radius: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(124,58,237,0.3);
+}
+.secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.5rem;
+  border: 2px solid var(--accent-primary);
+  color: var(--accent-primary);
+  border-radius: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.secondary-btn:hover {
+  background: var(--accent-primary);
+  color: white;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.success-modal {
+  background: var(--bg-primary);
+  border-radius: 24px;
+  padding: 2.5rem;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+}
+.success-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  animation: success-pop 0.5s ease;
+}
+.success-icon-wrap .material-symbols-outlined {
+  font-size: 40px;
+  color: #16a34a;
+}
+@keyframes success-pop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.success-modal h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+.success-modal > p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0 0 1.25rem;
+}
+
+.success-details {
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.25rem;
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent-primary);
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+.detail-header .material-symbols-outlined {
+  font-size: 20px;
+}
+.detail-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+.bank-details p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0;
+}
+
+.paypal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #0070ba;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+.paypal-btn:hover { transform: translateY(-1px); }
+.paypal-pal { color: #c0e0ff; }
+
+.success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Modal transitions */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+.modal-enter-active .success-modal,
+.modal-leave-active .success-modal {
+  transition: transform 0.3s ease;
+}
+.modal-enter-from {
+  opacity: 0;
+}
+.modal-enter-from .success-modal {
+  transform: scale(0.9) translateY(20px);
+}
+.modal-leave-to {
+  opacity: 0;
+}
+.modal-leave-to .success-modal {
+  transform: scale(0.95);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .checkout-grid { grid-template-columns: 1fr; }
+  .order-summary-card { position: static; }
+  .payment-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .payment-grid { grid-template-columns: 1fr 1fr; }
+  .checkout-header h1 { font-size: 1.5rem; }
+  .progress-steps { gap: 0; }
+  .step-line { width: 30px; }
 }
 </style>

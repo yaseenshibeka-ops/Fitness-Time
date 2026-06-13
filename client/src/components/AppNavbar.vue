@@ -32,6 +32,11 @@
               <span v-if="cartCount > 0" class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
             </router-link>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="toggleTheme" title="Toggle Theme">
+              <i class="bi" :class="isDark ? 'bi-sun' : 'bi-moon'"></i>
+            </a>
+          </li>
           <template v-if="auth.isLoggedIn">
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
@@ -102,9 +107,35 @@ async function fetchCartCount() {
   } catch { cartCount.value = 0 }
 }
 
+const isDark = ref(true)
+
 onMounted(() => {
+  const savedTheme = localStorage.getItem('theme')
+  if (savedTheme === 'light') {
+    isDark.value = false
+    document.documentElement.classList.remove('dark')
+    document.documentElement.classList.add('light')
+  } else {
+    isDark.value = true
+    document.documentElement.classList.remove('light')
+    document.documentElement.classList.add('dark')
+  }
+
   if (auth.isLoggedIn) fetchCartCount()
 })
+
+function toggleTheme() {
+  isDark.value = !isDark.value
+  if (isDark.value) {
+    document.documentElement.classList.remove('light')
+    document.documentElement.classList.add('dark')
+    localStorage.setItem('theme', 'dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+    document.documentElement.classList.add('light')
+    localStorage.setItem('theme', 'light')
+  }
+}
 
 function closeDropdown() {
   const el = document.querySelector('.dropdown-menu')?.parentElement

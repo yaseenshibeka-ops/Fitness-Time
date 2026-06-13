@@ -1,17 +1,60 @@
 :root {
-  --primary: #0066FF;
-  --primary-dark: #0047B3;
-  --accent: #00B4D8;
-  --success: #00C853;
-  --warning: #FFB300;
-  --danger: #FF3D00;
-  --dark: #0A1628;
-  --surface: #111D33;
-  --glass: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --text-light: #F8F9FA;
-  --text-muted: #ADB5BD;
+  --primary: #6366F1; /* Vibrant Indigo */
+  --primary-dark: #4F46E5;
+  --accent: #06B6D4; /* Neon Cyan */
+  --accent-purple: #8B5CF6; /* Royal Purple */
+  --success: #10B981; /* Emerald Green */
+  --warning: #F59E0B; /* Amber Warning */
+  --danger: #EF4444; /* Rose Red */
+  --dark: #090D1A; /* Deep Space Navy */
+  --surface: #121829; /* Sleek Dark Slate */
+  --glass: rgba(18, 24, 41, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --text-light: #F8FAFC;
+  --text-muted: #94A3B8;
   --font-primary: 'Inter', sans-serif;
+}
+
+html.light {
+  --dark: #F8FAFC;
+  --surface: #FFFFFF;
+  --glass: rgba(248, 250, 252, 0.7);
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --text-light: #0F172A;
+  --text-muted: #475569;
+}
+html.light .navbar-dark {
+  background-color: rgba(248, 250, 252, 0.85) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+html.light .nav-link {
+  color: rgba(15, 23, 42, 0.85) !important;
+}
+html.light .nav-link:hover, html.light .nav-link.router-link-exact-active {
+  color: var(--primary) !important;
+}
+html.light .navbar-brand {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+html.light .dropdown-menu-dark {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+html.light .dropdown-item {
+  color: #0F172A !important;
+}
+html.light .dropdown-item:hover {
+  background-color: rgba(99, 102, 241, 0.08) !important;
+  color: var(--primary) !important;
+}
+html.light .search-overlay {
+  background: rgba(248, 250, 252, 0.95);
+}
+html.light .navbar-toggler-icon {
+  filter: invert(1);
 }
 
 * { box-sizing: border-box; }
@@ -69,29 +112,31 @@ a { text-decoration: none; }
 
 /* ===== Glass / UI ===== */
 .glass-card {
-  background: var(--surface);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
 }
 .glass-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 40px 0 rgba(0, 102, 255, 0.2);
+  transform: translateY(-6px);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 16px 40px 0 rgba(99, 102, 241, 0.25);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--primary), var(--accent-purple));
   border: none; color: white; font-weight: 600;
-  border-radius: 8px; padding: 10px 24px;
-  transition: all 0.3s ease;
+  border-radius: 10px; padding: 12px 28px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.3);
 }
 .btn-primary:hover {
   background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-  transform: scale(1.05);
-  box-shadow: 0 4px 15px rgba(0, 102, 255, 0.4);
+  transform: scale(1.03) translateY(-1px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
 }
 
 .form-control {
@@ -200,4 +245,21 @@ a { text-decoration: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+.bg-section-alt {
+  background-color: rgba(99, 102, 241, 0.05) !important;
+}
+html.light .bg-section-alt {
+  background-color: rgba(99, 102, 241, 0.02) !important;
+}
+.bg-section-card {
+  background: var(--glass) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+html.light .bg-section-card {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }

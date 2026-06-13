@@ -93,8 +93,10 @@ pgPool.query = async function (sql, values) {
 pgPool.getConnection = async function () {
   const client = await pgPool.connect();
   
-  // Wrap client query
+  // Capture original methods before wrapping
   const originalClientQuery = client.query.bind(client);
+  const originalClientRelease = client.release.bind(client);
+
   client.query = async function (sql, values) {
     const pgSql = adaptQuery(sql, values);
     const result = await originalClientQuery(pgSql, values);
@@ -115,7 +117,7 @@ pgPool.getConnection = async function () {
   };
   
   client.release = function () {
-    client.release();
+    originalClientRelease();
   };
 
   return client;
