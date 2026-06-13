@@ -140,7 +140,7 @@ async function confirmPayment() {
   error.value = ''
   try {
     const subRes = await api.post('/subscriptions', { planType: plan.value.slug })
-    const subscriptionId = subRes.data.subscription?.subscriptionId || subRes.data.data?.subscriptionId
+    const subscriptionId = subRes.data.subscriptionId
 
     const paymentPayload = {
       subscriptionId,
@@ -152,7 +152,7 @@ async function confirmPayment() {
     }
 
     const payRes = await api.post('/payments/initiate', paymentPayload)
-    paymentResult.value = payRes.data.data
+    paymentResult.value = payRes.data
     result.value = true
   } catch (e) {
     error.value = e?.response?.data?.message || e?.message || 'Payment failed. Please try again.'
