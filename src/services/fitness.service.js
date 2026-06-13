@@ -1,14 +1,39 @@
 const pool = require('../config/database');
 
+const sanitizeFloat = (val, max = 999.99) => {
+    if (val === undefined || val === null || val === '' || isNaN(Number(val))) return null;
+    const num = parseFloat(val);
+    if (num > max) return max;
+    if (num < 0) return 0;
+    return num;
+};
+
+const sanitizeInt = (val) => {
+    if (val === undefined || val === null || val === '' || isNaN(Number(val))) return null;
+    const num = parseInt(val, 10);
+    if (num < 0) return 0;
+    return num;
+};
+
 class FitnessService {
     static async recordProgress(userId, progressData) {
         const { weight_kg, height_cm, body_fat_pct, chest_cm, waist_cm, hips_cm, biceps_cm, workout_type, duration_minutes, calories_burned, notes, recorded_date } = progressData;
+
+        const weight = sanitizeFloat(weight_kg);
+        const height = sanitizeFloat(height_cm);
+        const body_fat = sanitizeFloat(body_fat_pct, 100.00);
+        const chest = sanitizeFloat(chest_cm);
+        const waist = sanitizeFloat(waist_cm);
+        const hips = sanitizeFloat(hips_cm);
+        const biceps = sanitizeFloat(biceps_cm);
+        const duration = sanitizeInt(duration_minutes);
+        const calories = sanitizeInt(calories_burned);
 
         const [result] = await pool.query(
             `INSERT INTO fitness_progress 
             (user_id, weight_kg, height_cm, body_fat_pct, chest_cm, waist_cm, hips_cm, biceps_cm, workout_type, duration_minutes, calories_burned, notes, recorded_date) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [userId, weight_kg, height_cm, body_fat_pct, chest_cm, waist_cm, hips_cm, biceps_cm, workout_type, duration_minutes, calories_burned, notes, recorded_date]
+            [userId, weight, height, body_fat, chest, waist, hips, biceps, workout_type || null, duration, calories, notes || null, recorded_date]
         );
 
         return { progressId: result.insertId, message: 'Progress recorded successfully' };
@@ -54,11 +79,22 @@ class FitnessService {
 
     static async updateProgress(progressId, userId, progressData) {
         const { weight_kg, height_cm, body_fat_pct, chest_cm, waist_cm, hips_cm, biceps_cm, workout_type, duration_minutes, calories_burned, notes, recorded_date } = progressData;
+
+        const weight = sanitizeFloat(weight_kg);
+        const height = sanitizeFloat(height_cm);
+        const body_fat = sanitizeFloat(body_fat_pct, 100.00);
+        const chest = sanitizeFloat(chest_cm);
+        const waist = sanitizeFloat(waist_cm);
+        const hips = sanitizeFloat(hips_cm);
+        const biceps = sanitizeFloat(biceps_cm);
+        const duration = sanitizeInt(duration_minutes);
+        const calories = sanitizeInt(calories_burned);
+
         await pool.query(
             `UPDATE fitness_progress 
              SET weight_kg=?, height_cm=?, body_fat_pct=?, chest_cm=?, waist_cm=?, hips_cm=?, biceps_cm=?, workout_type=?, duration_minutes=?, calories_burned=?, notes=?, recorded_date=?
              WHERE progress_id=? AND user_id=?`,
-            [weight_kg, height_cm, body_fat_pct, chest_cm, waist_cm, hips_cm, biceps_cm, workout_type, duration_minutes, calories_burned, notes, recorded_date, progressId, userId]
+            [weight, height, body_fat, chest, waist, hips, biceps, workout_type || null, duration, calories, notes || null, recorded_date, progressId, userId]
         );
         return { message: 'Progress record updated successfully' };
     }
