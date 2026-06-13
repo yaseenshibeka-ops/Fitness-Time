@@ -127,7 +127,7 @@ onMounted(async () => {
       api.get('/subscriptions/current').catch(() => ({ data: { subscription: null } }))
     ])
     stats.value = statsRes.data.stats
-    progress.value = fitStore.progress
+    progress.value = fitStore.progress.value || []
     goals.value = goalsRes.data.goals || []
     sub.value = subRes.data.subscription
 

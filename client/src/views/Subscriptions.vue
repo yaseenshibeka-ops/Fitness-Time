@@ -47,7 +47,7 @@ const msg = ref('')
 async function subscribe(plan) {
   submitting.value = true
   try {
-    await api.post('/subscriptions', { plan_type: plan })
+    await api.post('/subscriptions', { planType: plan })
     msg.value = `Subscribed to ${plan} plan successfully!`
   } catch (e) {
     msg.value = e?.message || 'Subscription failed'

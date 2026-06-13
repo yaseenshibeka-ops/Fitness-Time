@@ -11,7 +11,7 @@
     </div>
 
     <!-- Summary Statistics -->
-    <div v-if="!fitStore.loading && fitStore.progress.length" class="row g-3 mb-4">
+    <div v-if="!loading && progress.length" class="row g-3 mb-4">
       <!-- Latest Weight Card -->
       <div class="col-md-3 col-sm-6">
         <div class="glass-card stat-card p-3 h-100 position-relative overflow-hidden">
@@ -88,7 +88,7 @@
     </div>
 
     <!-- Chart Panel -->
-    <div v-if="!fitStore.loading && fitStore.progress.length" class="glass-card p-4 mb-4">
+    <div v-if="!loading && progress.length" class="glass-card p-4 mb-4">
       <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <h6 class="fw-bold mb-0 text-light"><i class="bi bi-activity text-cyan me-2"></i>Progress Visualizer</h6>
         <div class="d-flex align-items-center gap-2">
@@ -113,11 +113,11 @@
     </div>
 
     <!-- Main Content State handler -->
-    <div v-if="fitStore.loading" class="text-center py-5">
+    <div v-if="loading" class="text-center py-5">
       <div class="spinner"></div>
     </div>
     <div v-else>
-      <div v-if="fitStore.progress.length" class="glass-card p-0 overflow-hidden mb-3">
+      <div v-if="progress.length" class="glass-card p-0 overflow-hidden mb-3">
         <div class="table-responsive">
           <table class="table table-dark table-hover mb-0 align-middle">
             <thead>
@@ -134,7 +134,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="p in fitStore.progress" :key="p.progress_id" class="progress-row">
+              <tr v-for="p in progress" :key="p.progress_id" class="progress-row">
                 <td class="ps-3 fw-semibold">{{ new Date(p.recorded_date).toLocaleDateString() }}</td>
                 <td>
                   <span class="badge bg-glass text-cyan px-2 py-1">
@@ -297,7 +297,7 @@ import { Chart, registerables } from 'chart.js'
 
 Chart.register(...registerables)
 
-const fitStore = useFitnessStore()
+const { progress, loading, fetchProgress, addRecord, deleteRecord, updateRecord } = useFitnessStore()
 const submitting = ref(false)
 const editingId = ref(null)
 const showMeasurements = ref(false)
@@ -325,7 +325,7 @@ const form = ref({
 
 // Summary Computations
 const sortedProgress = computed(() => {
-  return [...fitStore.progress].sort((a, b) => new Date(a.recorded_date) - new Date(b.recorded_date))
+  return [...progress.value].sort((a, b) => new Date(a.recorded_date) - new Date(b.recorded_date))
 })
 
 const latestWeight = computed(() => {
@@ -351,11 +351,11 @@ const bodyFatChange = computed(() => {
 })
 
 const workoutCount = computed(() => {
-  return fitStore.progress.filter(r => r.workout_type).length
+  return progress.value.filter(r => r.workout_type).length
 })
 
 const totalCalories = computed(() => {
-  return fitStore.progress.reduce((sum, r) => sum + (r.calories_burned || 0), 0)
+  return progress.value.reduce((sum, r) => sum + (r.calories_burned || 0), 0)
 })
 
 // Utility functions
@@ -420,9 +420,9 @@ async function save() {
   submitting.value = true
   try {
     if (editingId.value) {
-      await fitStore.updateRecord(editingId.value, form.value)
+      await updateRecord(editingId.value, form.value)
     } else {
-      await fitStore.addRecord(form.value)
+      await addRecord(form.value)
     }
     document.getElementById('closeProgressModal')?.click()
     await updateChartData()
@@ -436,7 +436,7 @@ async function save() {
 async function deleteProgress(id) {
   if (!confirm('Are you sure you want to delete this record?')) return
   try {
-    await fitStore.deleteRecord(id)
+    await deleteRecord(id)
     await updateChartData()
   } catch (e) {
     alert('Failed to delete progress record')
@@ -460,10 +460,10 @@ function renderChart() {
     chartInstance = null
   }
   
-  if (!progressChartCanvas.value || !fitStore.progress.length) return
+  if (!progressChartCanvas.value || !progress.value.length) return
 
   // Filter and sort records
-  let records = [...fitStore.progress].sort((a, b) => new Date(a.recorded_date) - new Date(b.recorded_date))
+  let records = [...progress.value].sort((a, b) => new Date(a.recorded_date) - new Date(b.recorded_date))
   
   if (timeframe.value !== 'all') {
     const days = parseInt(timeframe.value)
@@ -550,7 +550,7 @@ function renderChart() {
 }
 
 onMounted(async () => {
-  await fitStore.fetchProgress()
+  await fetchProgress()
   renderChart()
 })
 </script>
