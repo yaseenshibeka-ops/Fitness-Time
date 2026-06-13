@@ -1,13 +1,6 @@
 <template>
   <div class="checkout-page pt-20">
     <div class="cart-container">
-      <!-- Expiry Alert Banner -->
-      <div v-if="cartStore.showExpiryAlert" class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert" style="border-radius: 12px; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: var(--warning);">
-        <span class="material-symbols-outlined">warning</span>
-        <div>Your cart reservation time has expired. Items have been released back to stock.</div>
-        <button type="button" class="btn-close btn-close-white ms-auto" @click="cartStore.showExpiryAlert = false" aria-label="Close" style="filter: invert(1);"></button>
-      </div>
-
       <!-- Header -->
       <div class="cart-header">
         <div class="cart-header-text">
@@ -81,12 +74,6 @@
         <!-- Order Summary Sidebar -->
         <div class="cart-summary-card">
           <h2>Order Summary</h2>
-          <!-- Timer Banner -->
-          <div v-if="cartStore.timeLeft > 0" class="cart-countdown-banner">
-            <span class="material-symbols-outlined timer-icon">alarm</span>
-            <span class="timer-label">Items reserved for:</span>
-            <span class="timer-countdown">{{ cartStore.countdownText }}</span>
-          </div>
           <div class="summary-row">
             <span>Subtotal</span>
             <span>{{ Number(cart.summary?.subtotal).toLocaleString() }} RWF</span>
@@ -181,10 +168,6 @@ function recalcSummary() {
     totalItems += item.quantity
   })
   cart.value.summary = { subtotal, totalItems }
-
-  if (totalItems === 0) {
-    cartStore.stopCountdown()
-  }
 }
 
 function changeQty(item, delta) {
@@ -455,34 +438,6 @@ onMounted(loadCart)
   padding: 1.75rem;
   position: sticky;
   top: 100px;
-}
-
-.cart-countdown-banner {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #ef4444;
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  margin-bottom: 1.25rem;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-.cart-countdown-banner .timer-icon {
-  font-size: 20px;
-  animation: pulse-timer 1s infinite alternate;
-}
-.timer-countdown {
-  font-family: monospace;
-  font-size: 1rem;
-  font-weight: 700;
-  margin-left: auto;
-}
-@keyframes pulse-timer {
-  0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(1.1); opacity: 1; }
 }
 .cart-summary-card h2 {
   font-size: 1.25rem;

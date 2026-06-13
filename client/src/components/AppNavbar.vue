@@ -32,7 +32,6 @@
                 <i class="bi bi-cart3" style="font-size: 1.1rem; vertical-align: middle;"></i>
                 <span v-if="cartCount > 0" class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
               </div>
-              <span v-if="cart.timeLeft > 0" class="navbar-countdown">{{ cart.countdownText }}</span>
             </router-link>
           </li>
           <li class="nav-item">
