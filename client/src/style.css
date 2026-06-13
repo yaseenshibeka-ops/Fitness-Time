@@ -62,6 +62,7 @@ a { text-decoration: none; }
   background: rgba(10, 22, 40, 0.95); z-index: 1040;
 }
 .navbar-toggler:focus { box-shadow: none; }
+.navbar ~ main { padding-top: 60px; }
 
 /* ===== Glass / UI ===== */
 .glass-card {
