@@ -49,7 +49,16 @@ async function migrate() {
                     continue;
                 }
                 
-                await client.query(statement);
+                try {
+                    await client.query(statement);
+                } catch (err) {
+                    // Ignore duplicate key/existence errors (standard migration re-run safety)
+                    if (['23505', '42P07', '42701', '42710'].includes(err.code)) {
+                        console.log(`  Skipped code ${err.code}: ${statement.slice(0, 50)}...`);
+                    } else {
+                        throw err; // rethrow critical errors
+                    }
+                }
             }
         }
         
