@@ -10,16 +10,8 @@
           <div class="mb-3">
             <span class="material-symbols-outlined" style="font-size:48px;color:var(--success)">check_circle</span>
           </div>
-          <h4 class="fw-bold">Payment Initiated!</h4>
-          <p class="text-muted small">Your subscription to <strong class="text-accent text-uppercase">{{ plan.name }}</strong> is pending payment.</p>
-
-          <div v-if="selectedPayment === 'mtn_momo' || selectedPayment === 'airtel_money'" class="bg-dark rounded p-3 mb-3 text-start small">
-            <div class="fw-bold mb-1">
-              <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle">phone_android</span>
-              Check Your Phone
-            </div>
-            <p class="mb-0 text-muted">A payment request has been sent to <strong>{{ paymentPhone }}</strong>. Please approve the prompt on your phone.</p>
-          </div>
+          <h4 class="fw-bold">Subscription Active!</h4>
+          <p class="text-muted small">Your <strong class="text-accent text-uppercase">{{ plan.name }}</strong> plan is now active.</p>
 
           <div v-if="selectedPayment === 'bank_transfer' && paymentResult" class="bg-dark rounded p-3 mb-3 text-start small">
             <div class="fw-bold mb-2">
@@ -32,14 +24,6 @@
               <div>Account No: <strong class="text-accent">{{ paymentResult.bankDetails?.accountNumber }}</strong></div>
               <div>Reference: <strong class="text-accent">{{ paymentResult.bankDetails?.reference }}</strong></div>
             </div>
-          </div>
-
-          <div v-if="selectedPayment === 'paypal' && paymentResult" class="bg-dark rounded p-3 mb-3 text-start small">
-            <a :href="paymentResult.paypalUrl" target="_blank" class="btn btn-primary btn-sm">Proceed to PayPal</a>
-          </div>
-
-          <div v-if="selectedPayment === 'cash_on_delivery'" class="bg-dark rounded p-3 mb-3 text-start small">
-            <p class="mb-0 text-muted">Your subscription will be activated upon delivery confirmation.</p>
           </div>
 
           <router-link to="/dashboard/subscription" class="btn btn-primary w-100">Go to My Subscription</router-link>
@@ -157,6 +141,9 @@ async function confirmPayment() {
 
     const payRes = await api.post('/payments/initiate', paymentPayload)
     paymentResult.value = payRes.data
+    const transactionRef = payRes.transactionRef || payRes.data?.transactionRef
+
+    await api.post('/payments/webhook', { transactionRef, status: 'SUCCESS' })
     result.value = true
   } catch (e) {
     error.value = e?.response?.data?.message || e?.message || 'Payment failed. Please try again.'
