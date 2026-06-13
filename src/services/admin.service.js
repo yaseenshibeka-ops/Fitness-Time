@@ -9,10 +9,10 @@ class AdminService {
     const [[userStats]] = await pool.query('SELECT COUNT(*) as total_users FROM users WHERE role = "user"');
     const [[allUsers]] = await pool.query('SELECT COUNT(*) as total FROM users');
     const [[orderStats]] = await pool.query('SELECT COUNT(*) as total_orders, COALESCE(SUM(grand_total),0) as total_revenue FROM orders WHERE status != "cancelled"');
-    const [[productStats]] = await pool.query('SELECT COUNT(*) as total_products FROM products WHERE is_active = 1');
+    const [[productStats]] = await pool.query('SELECT COUNT(*) as total_products FROM products WHERE is_active = TRUE');
     const [[subscriptionStats]] = await pool.query('SELECT COUNT(*) as active_subscriptions FROM subscriptions WHERE status = "active"');
     const [[pendingOrders]] = await pool.query('SELECT COUNT(*) as pending FROM orders WHERE status = "pending"');
-    const [[lowStock]] = await pool.query('SELECT COUNT(*) as low FROM products WHERE is_active = 1 AND stock_quantity < 10');
+    const [[lowStock]] = await pool.query('SELECT COUNT(*) as low FROM products WHERE is_active = TRUE AND stock_quantity < 10');
     const [[fitnessStats]] = await pool.query('SELECT COUNT(*) as total FROM fitness_progress');
 
     const [monthlySales] = await pool.query(
@@ -136,19 +136,19 @@ class AdminService {
     const { name, description, price, stock_quantity, category_id, image_url, is_active } = data;
     await pool.query(
       'UPDATE products SET name=?, description=?, price=?, stock_quantity=?, category_id=?, image_url=?, is_active=? WHERE product_id=?',
-      [name, description, price, stock_quantity, category_id, image_url, is_active !== undefined ? is_active : 1, id]
+      [name, description, price, stock_quantity, category_id, image_url, is_active !== undefined ? is_active : true, id]
     );
     return { message: 'Product updated successfully' };
   }
 
   static async deleteProduct(id) {
-    await pool.query('UPDATE products SET is_active=0 WHERE product_id=?', [id]);
+    await pool.query('UPDATE products SET is_active=FALSE WHERE product_id=?', [id]);
     return { message: 'Product deactivated' };
   }
 
   static async bulkDeleteProducts(ids) {
     if (!ids || !ids.length) throw { statusCode: 400, message: 'No IDs provided' };
-    await pool.query('UPDATE products SET is_active=0 WHERE product_id IN (?)', [ids]);
+    await pool.query('UPDATE products SET is_active=FALSE WHERE product_id IN (?)', [ids]);
     return { message: `${ids.length} products deactivated` };
   }
 

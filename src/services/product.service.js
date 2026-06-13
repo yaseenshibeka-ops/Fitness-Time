@@ -7,7 +7,7 @@ class ProductService {
     }
 
     static async getAllProducts(filters = {}) {
-        let query = 'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id WHERE p.is_active = 1';
+        let query = 'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id WHERE p.is_active = TRUE';
         const params = [];
 
         if (filters.category_id) {
@@ -34,7 +34,7 @@ class ProductService {
 
     static async getFeaturedProducts(limit = 6) {
         const [products] = await pool.query(
-            'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id WHERE p.is_active = 1 ORDER BY p.created_at DESC LIMIT ?',
+            'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id WHERE p.is_active = TRUE ORDER BY p.created_at DESC LIMIT ?',
             [limit]
         );
         return products;
@@ -42,7 +42,7 @@ class ProductService {
 
     static async getProductById(productId) {
         const [products] = await pool.query(
-            'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id WHERE p.product_id = ? AND p.is_active = 1',
+            'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id WHERE p.product_id = ? AND p.is_active = TRUE',
             [productId]
         );
 
@@ -81,7 +81,7 @@ class ProductService {
 
     static async addProductReview(userId, productId, rating, reviewText) {
         // Check product exists
-        const [products] = await pool.query('SELECT product_id FROM products WHERE product_id = ? AND is_active = 1', [productId]);
+        const [products] = await pool.query('SELECT product_id FROM products WHERE product_id = ? AND is_active = TRUE', [productId]);
         if (products.length === 0) throw { statusCode: 404, message: 'Product not found' };
 
         // Check if already reviewed
