@@ -35,6 +35,9 @@ a { text-decoration: none; }
   -webkit-backdrop-filter: blur(15px);
   border-bottom: 1px solid var(--glass-border);
 }
+.navbar-collapse.collapse {
+  visibility: visible !important;
+}
 .navbar-brand {
   font-weight: 800;
   letter-spacing: 0.5px;

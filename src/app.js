@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const fs = require('fs');
 const rateLimit = require('express-rate-limit');
 
 // Initialize app
@@ -31,8 +32,18 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static Files Setup - serve Vue build first, then legacy public
-app.use(express.static(path.join(__dirname, '../client/dist')));
+// Static Files Setup - try multiple locations for the Vue build
+const distPaths = [
+  path.join(__dirname, '../api/public'),
+  path.join(__dirname, '../client/dist'),
+  path.join(process.cwd(), 'api/public'),
+  path.join(process.cwd(), 'client/dist'),
+];
+for (const p of distPaths) {
+  if (fs.existsSync(p)) {
+    app.use(express.static(p));
+  }
+}
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Keep legacy public for backward compat
 app.use(express.static(path.join(__dirname, '../public')));
@@ -69,7 +80,15 @@ app.get('*', (req, res) => {
     if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
         return res.status(404).json({ status: 'error', message: 'Not found' });
     }
-    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    // Try sending a static file; fallback to index.html
+    const indexPaths = [
+      path.join(__dirname, '../api/public/index.html'),
+      path.join(__dirname, '../client/dist/index.html'),
+      path.join(process.cwd(), 'api/public/index.html'),
+      path.join(process.cwd(), 'client/dist/index.html'),
+    ];
+    const indexPath = indexPaths.find(p => fs.existsSync(p));
+    res.sendFile(indexPath || path.join(__dirname, '../client/dist/index.html'));
 });
 
 // Centralized Error Handler

@@ -10,10 +10,13 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import AppNavbar from './components/AppNavbar.vue'
 import AppFooter from './components/AppFooter.vue'
 
-const route = useRoute()
-const showMainNav = computed(() => !route.path.startsWith('/dashboard') && !route.path.startsWith('/admin'))
+const router = useRouter()
+const showMainNav = computed(() => {
+  const path = router.currentRoute.value?.path || ''
+  return !path.startsWith('/dashboard') && !path.startsWith('/admin')
+})
 </script>
