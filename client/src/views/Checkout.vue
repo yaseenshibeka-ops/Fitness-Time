@@ -198,7 +198,7 @@
               >
                 <span v-if="submitting" class="btn-spinner"></span>
                 <span v-else class="material-symbols-outlined">lock</span>
-                {{ submitting ? 'Processing...' : `Place Order â€” ${total.toLocaleString()} RWF` }}
+                {{ submitting ? 'Processing...' : `Place Order — ${total.toLocaleString()} RWF` }}
               </button>
             </div>
           </div>
@@ -467,7 +467,14 @@ async function placeOrder() {
 
     paymentResult.value = payRes.data?.data || payRes.data || payRes
     const transactionRef = payRes.transactionRef || payRes.data?.transactionRef
-    api.post('/payments/webhook', { transactionRef, status: 'SUCCESS' }).catch(() => {})
+    
+    // Await webhook simulation so the backend updates the order status before we show the success modal
+    try {
+      await api.post('/payments/webhook', { transactionRef, status: 'SUCCESS' })
+    } catch (webhookErr) {
+      console.error('Webhook confirmation failed:', webhookErr)
+    }
+
     cart.value = null
     cartStore.fetchCount()
     currentStep.value = 3

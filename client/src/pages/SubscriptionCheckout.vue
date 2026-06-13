@@ -151,7 +151,12 @@ async function confirmPayment() {
     paymentResult.value = payRes.data
     const transactionRef = payRes.transactionRef || payRes.data?.transactionRef
 
-    api.post('/payments/webhook', { transactionRef, status: 'SUCCESS' }).catch(() => {})
+    // Await webhook simulation so the backend updates the subscription status before showing success
+    try {
+      await api.post('/payments/webhook', { transactionRef, status: 'SUCCESS' })
+    } catch (webhookErr) {
+      console.error('Webhook confirmation failed:', webhookErr)
+    }
     result.value = true
   } catch (e) {
     const msg = e?.response?.data?.message || e?.message || ''
