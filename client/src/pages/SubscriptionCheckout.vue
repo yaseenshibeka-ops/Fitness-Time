@@ -31,8 +31,8 @@
 
         <div v-else class="glass-card p-4">
           <div class="d-flex align-items-center gap-3 mb-4 pb-3" style="border-bottom:1px solid var(--glass-border)">
-            <div style="width:56px;height:56px;border-radius:12px;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">
-              <i class="bi bi-star-fill"></i>
+            <div :style="`width:56px;height:56px;border-radius:12px;background:${planColor};display:flex;align-items:center;justify-content:center;font-size:1.5rem;`">
+              <i :class="planIcon"></i>
             </div>
             <div>
               <h4 class="fw-bold mb-0 text-accent text-uppercase">{{ plan.name }}</h4>
@@ -111,6 +111,11 @@ const paymentMethods = [
 ]
 
 const plan = computed(() => plans.find(p => p.slug === route.params.planType) || plans[0])
+
+const planColors = { basic: '#6366F1', premium: '#06B6D4', annual: '#8B5CF6' }
+const planIcons = { basic: 'bi bi-star-fill', premium: 'bi bi-crown-fill', annual: 'bi bi-diamond-fill' }
+const planColor = computed(() => planColors[plan.value.slug] || '#6366F1')
+const planIcon = computed(() => planIcons[plan.value.slug] || 'bi bi-star-fill')
 
 const selectedPayment = ref('')
 const paymentPhone = ref('')
