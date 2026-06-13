@@ -475,10 +475,14 @@ async function placeOrder() {
   } catch (e) {
     console.error('Checkout error:', e)
     const msg = typeof e === 'string' ? e : e?.response?.data?.message || e?.message || e?.data?.message || (e?.response?.data ? JSON.stringify(e.response.data) : '')
-    if (msg.includes('stock')) {
+    if (e?.code === 'ECONNABORTED' || msg.includes('timeout') || msg.includes('timed out')) {
+      error.value = 'Request timed out. The server may be starting up, please try again in a moment.'
+    } else if (msg.includes('stock')) {
       error.value = 'Some items in your cart are out of stock. Please update your cart.'
     } else if (msg.includes('Cart is empty')) {
       error.value = 'Your cart is empty. Please add items first.'
+    } else if (msg.includes('connect ECONNREFUSED') || msg.includes('ENOTFOUND')) {
+      error.value = 'Cannot reach the server. Make sure the backend is running.'
     } else if (msg) {
       error.value = msg
     } else {

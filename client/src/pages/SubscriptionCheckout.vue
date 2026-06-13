@@ -154,7 +154,14 @@ async function confirmPayment() {
     api.post('/payments/webhook', { transactionRef, status: 'SUCCESS' }).catch(() => {})
     result.value = true
   } catch (e) {
-    error.value = e?.response?.data?.message || e?.message || 'Payment failed. Please try again.'
+    const msg = e?.response?.data?.message || e?.message || ''
+    if (e?.code === 'ECONNABORTED' || msg.includes('timeout')) {
+      error.value = 'Request timed out. The server may be starting up, please try again in a moment.'
+    } else if (msg.includes('connect ECONNREFUSED') || msg.includes('ENOTFOUND')) {
+      error.value = 'Cannot reach the server. Make sure the backend is running.'
+    } else {
+      error.value = msg || 'Payment failed. Please try again.'
+    }
   } finally {
     submitting.value = false
   }
