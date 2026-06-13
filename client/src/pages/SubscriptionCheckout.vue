@@ -55,11 +55,14 @@
             <div v-for="pm in paymentMethods" :key="pm.id" class="col-6">
               <button
                 class="btn w-100 text-start d-flex align-items-center gap-2"
-                :class="selectedPayment === pm.id ? 'btn-primary' : 'btn-outline-light'"
+                :class="selectedPayment === pm.id ? 'pm-selected' : 'pm-unselected'"
                 @click="selectedPayment = pm.id"
                 style="padding:0.75rem;border-radius:12px;"
               >
-                <i :class="pm.icon" class="fs-5"></i>
+                <div class="pm-icon-wrap" :style="{ background: pm.bgColor }">
+                  <span v-if="pm.iconText" class="pm-icon-text" :style="{ color: pm.textColor }">{{ pm.iconText }}</span>
+                  <span v-else class="material-symbols-outlined pm-icon-sym" :style="{ color: pm.textColor }">{{ pm.icon }}</span>
+                </div>
                 <div>
                   <div class="fw-bold small">{{ pm.label }}</div>
                   <div class="small opacity-75">{{ pm.desc }}</div>
@@ -103,11 +106,11 @@ const plans = [
 ]
 
 const paymentMethods = [
-  { id: 'mtn_momo', label: 'MTN MoMo', desc: 'Instant payment', icon: 'bi bi-phone' },
-  { id: 'airtel_money', label: 'Airtel Money', desc: 'Instant payment', icon: 'bi bi-phone' },
-  { id: 'bank_transfer', label: 'Bank Transfer', desc: 'Manual transfer', icon: 'bi bi-bank' },
-  { id: 'cash_on_delivery', label: 'Cash on Delivery', desc: 'Pay on arrival', icon: 'bi bi-cash' },
-  { id: 'paypal', label: 'PayPal', desc: 'International', icon: 'bi bi-paypal' },
+  { id: 'mtn_momo', label: 'MTN MoMo', desc: 'Instant payment', bgColor: '#fef3c7', textColor: '#b45309', icon: '', iconText: 'MTN' },
+  { id: 'airtel_money', label: 'Airtel Money', desc: 'Instant payment', bgColor: '#fee2e2', textColor: '#dc2626', icon: '', iconText: 'AIRT' },
+  { id: 'cash_on_delivery', label: 'Cash on Delivery', desc: 'Pay on arrival', bgColor: 'var(--glass)', textColor: 'var(--text-muted)', icon: 'payments', iconText: '' },
+  { id: 'bank_transfer', label: 'Bank Transfer', desc: 'Manual transfer', bgColor: 'var(--glass)', textColor: 'var(--text-muted)', icon: 'account_balance', iconText: '' },
+  { id: 'paypal', label: 'PayPal', desc: 'International', bgColor: '#dbeafe', textColor: '#2563eb', icon: '', iconText: 'Pay' },
 ]
 
 const plan = computed(() => plans.find(p => p.slug === route.params.planType) || plans[0])
@@ -157,3 +160,25 @@ async function confirmPayment() {
   }
 }
 </script>
+
+<style scoped>
+.pm-icon-wrap {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 0.75rem; font-weight: 700;
+}
+.pm-icon-text { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.5px; }
+.pm-icon-sym { font-size: 1.25rem; }
+.pm-selected {
+  background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+  border: none; color: white; font-weight: 600;
+  box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.3);
+}
+.pm-unselected {
+  background: var(--glass); border: 1px solid var(--glass-border);
+  color: var(--text-light);
+}
+.pm-unselected:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+}
+</style>
