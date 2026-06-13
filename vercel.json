@@ -2,7 +2,10 @@
   "buildCommand": "cd client && npm run build",
   "installCommand": "npm install && cd client && npm install",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api" }
+    {
+      "source": "/(.*)",
+      "destination": "/api"
+    }
   ],
   "functions": {
     "api/index.js": {
