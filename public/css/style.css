@@ -1,0 +1,361 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap');
+
+:root {
+    /* Rwandan-Inspired Premium Dark Theme (HSL) */
+    --primary: hsl(217, 100%, 61%);
+    --primary-dark: hsl(217, 100%, 50%);
+    --accent: hsl(187, 85%, 53%);
+    --accent-glow: hsla(187, 85%, 53%, 0.15);
+    --success: hsl(145, 80%, 45%);
+    --warning: hsl(36, 100%, 55%);
+    --danger: hsl(5, 95%, 60%);
+    
+    --dark: hsl(222, 47%, 6%);
+    --surface: hsl(220, 35%, 11%);
+    --surface-hover: hsl(220, 30%, 15%);
+    --surface-muted: hsl(220, 25%, 16%);
+    
+    --glass: hsla(220, 40%, 12%, 0.45);
+    --glass-hover: hsla(220, 40%, 16%, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-light: rgba(255, 255, 255, 0.15);
+    
+    --text-light: hsl(210, 40%, 98%);
+    --text-muted: hsl(215, 20%, 65%);
+    --text-dark: hsl(222, 47%, 6%);
+    
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--dark);
+    color: var(--text-light);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand, .display-3, .display-5 {
+    font-family: var(--font-heading);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--dark);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--surface-muted);
+    border-radius: 4px;
+    border: 2px solid var(--dark);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.glass-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--glass-border-light);
+    box-shadow: 0 20px 40px 0 rgba(0, 180, 216, 0.12), 0 4px 12px 0 rgba(0, 0, 0, 0.5);
+    background: var(--glass-hover);
+}
+
+/* Custom Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border: none;
+    color: var(--text-light);
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 12px 28px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 15px rgba(0, 102, 255, 0.25);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 102, 255, 0.45);
+    color: var(--text-light);
+}
+
+.btn-outline-light {
+    border: 1px solid var(--glass-border-light);
+    border-radius: 12px;
+    padding: 12px 28px;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-outline-light:hover {
+    background: var(--text-light);
+    color: var(--text-dark) !important;
+    border-color: var(--text-light);
+    transform: translateY(-2px);
+}
+
+/* Form Elements */
+.form-control {
+    background-color: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--text-light);
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    background-color: var(--glass);
+    border-color: var(--accent);
+    color: var(--text-light);
+    box-shadow: 0 0 0 0.25rem rgba(0, 180, 216, 0.25);
+}
+
+.form-label {
+    color: var(--text-muted);
+}
+
+/* Navbar */
+.navbar {
+    padding: 20px 0;
+    transition: all 0.3s ease;
+    z-index: 1030;
+}
+.navbar.navbar-scrolled {
+    padding: 12px 0;
+    background-color: rgba(10, 22, 40, 0.85) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--text-light), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-link {
+    color: var(--text-muted) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    padding: 8px 16px !important;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--text-light) !important;
+}
+
+/* Hero Section */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: radial-gradient(circle at 10% 20%, rgba(0, 102, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 180, 216, 0.1) 0%, transparent 50%),
+                var(--dark);
+    padding-top: 100px;
+    padding-bottom: 60px;
+}
+
+.text-accent {
+    background: linear-gradient(135deg, var(--accent), var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Features */
+.feature-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(0, 180, 216, 0.1));
+    border: 1px solid rgba(0, 180, 216, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover .feature-icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+}
+
+.glass-card:hover .feature-icon-wrapper i {
+    color: var(--text-light);
+}
+
+.feature-icon {
+    font-size: 1.75rem;
+    color: var(--accent);
+    transition: color 0.3s ease;
+}
+
+/* Mock Dashboard Component for Hero */
+.dashboard-mockup {
+    position: relative;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.dashboard-card {
+    background: hsla(220, 40%, 12%, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+}
+
+.chart-bar-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 100px;
+    margin-top: 15px;
+}
+
+.chart-bar {
+    flex: 1;
+    background: linear-gradient(to top, var(--primary), var(--accent));
+    border-radius: 4px;
+    transition: height 1s ease;
+    min-height: 10px;
+}
+
+.progress-circle-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.progress-circle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 8;
+}
+
+.progress-circle-val {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    stroke-dasharray: 226;
+    stroke-dashoffset: 68; /* 70% complete */
+}
+
+/* Product Cards Grid */
+.product-card {
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-image-wrapper {
+    overflow: hidden;
+    border-radius: 19px 19px 0 0;
+    position: relative;
+}
+
+.product-card img {
+    height: 220px;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-card:hover img {
+    transform: scale(1.08);
+}
+
+/* Subscriptions Pricing */
+.plan-card {
+    position: relative;
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.plan-card.premium {
+    border: 1.5px solid var(--accent);
+    background: linear-gradient(180deg, hsla(187, 85%, 53%, 0.05) 0%, var(--glass) 100%);
+    box-shadow: 0 15px 45px rgba(0, 180, 216, 0.15);
+}
+
+.plan-card.premium:hover {
+    box-shadow: 0 20px 50px rgba(0, 180, 216, 0.25);
+}
+
+/* Badges */
+.bg-accent {
+    background-color: var(--accent);
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.tracking-wider {
+    letter-spacing: 0.1em;
+}
+
+/* Loading Spinner */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--glass-border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 2rem auto;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Animations */
+.fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
