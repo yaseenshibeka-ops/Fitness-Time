@@ -21,9 +21,9 @@ if ((poolConfig.connectionString && poolConfig.connectionString.includes('neon.t
   poolConfig.ssl = { rejectUnauthorized: false };
 }
 
-poolConfig.connectionTimeoutMillis = 10000;
-poolConfig.idleTimeoutMillis = 30000;
-poolConfig.max = 5;
+poolConfig.connectionTimeoutMillis = 5000;
+poolConfig.idleTimeoutMillis = 10000;
+poolConfig.max = 20;
 const pgPool = new Pool(poolConfig);
 
 pgPool.on('connect', (client) => {
@@ -91,7 +91,6 @@ pgPool.query = async function (sql, values) {
   // mysql2 allows query(sql, callback) or query(sql, values)
   // Our code uses: await pool.query(sql, values)
   const pgSql = adaptQuery(sql, values);
-  console.log('ADAPTED SQL:', pgSql);
   const result = await originalQuery(pgSql, values);
   return formatResult(sql, result);
 };

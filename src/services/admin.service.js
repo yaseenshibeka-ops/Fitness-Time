@@ -270,8 +270,39 @@ class AdminService {
     const [payments] = await pool.query('SELECT * FROM payments WHERE payment_id=?', [paymentId]);
     if (!payments.length) throw { statusCode: 404, message: 'Payment not found' };
     if (payments[0].payment_status !== 'completed') throw { statusCode: 400, message: 'Only completed payments can be refunded' };
-    await pool.query('UPDATE payments SET payment_status="refunded" WHERE payment_id=?', [paymentId]);
-    return { message: 'Payment refunded successfully' };
+
+    const payment = payments[0];
+    const orderId = payment.order_id;
+
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+
+      await connection.query('UPDATE payments SET payment_status="refunded" WHERE payment_id=?', [paymentId]);
+
+      if (orderId) {
+        await connection.query('UPDATE orders SET status="refunded" WHERE order_id=?', [orderId]);
+
+        // Restore product stock
+        const [items] = await connection.query(
+          'SELECT product_id, quantity FROM order_items WHERE order_id=?', [orderId]
+        );
+        for (const item of items) {
+          await connection.query(
+            'UPDATE products SET stock_quantity = stock_quantity + ? WHERE product_id = ?',
+            [item.quantity, item.product_id]
+          );
+        }
+      }
+
+      await connection.commit();
+      return { message: 'Payment refunded successfully' };
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
   }
 
   // ===================== SUBSCRIPTIONS =====================
