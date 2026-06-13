@@ -27,9 +27,12 @@
             </a>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link position-relative" to="/cart" title="Cart">
-              <i class="bi bi-cart3"></i>
-              <span v-if="cart.count > 0" class="cart-badge">{{ cart.count > 99 ? '99+' : cart.count }}</span>
+            <router-link class="nav-link position-relative d-flex align-items-center gap-1" to="/cart" title="Cart" style="padding-top: 6px; padding-bottom: 6px;">
+              <div class="position-relative d-inline-block">
+                <i class="bi bi-cart3" style="font-size: 1.1rem; vertical-align: middle;"></i>
+                <span v-if="cart.count > 0" class="cart-badge">{{ cart.count > 99 ? '99+' : cart.count }}</span>
+              </div>
+              <span v-if="cart.timeLeft > 0" class="navbar-countdown">{{ cart.countdownText }}</span>
             </router-link>
           </li>
           <li class="nav-item">

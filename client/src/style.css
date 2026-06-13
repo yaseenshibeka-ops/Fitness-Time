@@ -121,6 +121,24 @@ a { text-decoration: none; }
   min-width: 18px; height: 18px; line-height: 18px;
   border-radius: 9px; text-align: center; padding: 0 4px;
 }
+.navbar-countdown {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  font-family: monospace;
+  animation: pulse-navbar-timer 1s infinite alternate;
+  display: inline-block;
+  vertical-align: middle;
+}
+@keyframes pulse-navbar-timer {
+  0% { opacity: 0.85; transform: scale(0.96); }
+  100% { opacity: 1; transform: scale(1); }
+}
 .search-overlay {
   position: fixed; top: 60px; left: 0; right: 0; bottom: 0;
   background: rgba(10, 22, 40, 0.95); z-index: 1040;

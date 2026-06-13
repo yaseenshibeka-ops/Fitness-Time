@@ -2,10 +2,10 @@
   <div class="checkout-page pt-20">
     <div class="cart-container">
       <!-- Expiry Alert Banner -->
-      <div v-if="showExpiryAlert" class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert" style="border-radius: 12px; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: var(--warning);">
+      <div v-if="cartStore.showExpiryAlert" class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert" style="border-radius: 12px; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: var(--warning);">
         <span class="material-symbols-outlined">warning</span>
         <div>Your cart reservation time has expired. Items have been released back to stock.</div>
-        <button type="button" class="btn-close btn-close-white ms-auto" @click="showExpiryAlert = false" aria-label="Close" style="filter: invert(1);"></button>
+        <button type="button" class="btn-close btn-close-white ms-auto" @click="cartStore.showExpiryAlert = false" aria-label="Close" style="filter: invert(1);"></button>
       </div>
 
       <!-- Header -->
@@ -82,10 +82,10 @@
         <div class="cart-summary-card">
           <h2>Order Summary</h2>
           <!-- Timer Banner -->
-          <div v-if="timeLeft > 0" class="cart-countdown-banner">
+          <div v-if="cartStore.timeLeft > 0" class="cart-countdown-banner">
             <span class="material-symbols-outlined timer-icon">alarm</span>
             <span class="timer-label">Items reserved for:</span>
-            <span class="timer-countdown">{{ countdownText }}</span>
+            <span class="timer-countdown">{{ cartStore.countdownText }}</span>
           </div>
           <div class="summary-row">
             <span>Subtotal</span>
@@ -140,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import api from '../services/api'
 import { cart as cartStore } from '../stores/cart'
 
@@ -148,64 +148,13 @@ const cart = ref(null)
 const loading = ref(true)
 const busyItems = ref({}) // Track loading state per item
 
-// Countdown Timer State
-const timeLeft = ref(0)
-let timerInterval = null
-const showExpiryAlert = ref(false)
-
-const countdownText = computed(() => {
-  const m = Math.floor(timeLeft.value / 60).toString().padStart(2, '0')
-  const s = (timeLeft.value % 60).toString().padStart(2, '0')
-  return `${m}:${s}`
-})
-
-function initCountdown() {
-  if (timerInterval) clearInterval(timerInterval)
-
-  if (!cart.value?.items || cart.value.items.length === 0) {
-    timeLeft.value = 0
-    localStorage.removeItem('cart_expiry')
-    return
-  }
-
-  let expiry = localStorage.getItem('cart_expiry')
-  if (!expiry) {
-    expiry = Date.now() + 10 * 60 * 1000
-    localStorage.setItem('cart_expiry', expiry.toString())
-  } else {
-    expiry = parseInt(expiry)
-    if (expiry <= Date.now()) {
-      handleCartExpiration()
-      return
-    }
-  }
-
-  const calcTimeLeft = () => {
-    const remaining = Math.max(0, Math.floor((expiry - Date.now()) / 1000))
-    timeLeft.value = remaining
-
-    if (remaining <= 0) {
-      clearInterval(timerInterval)
-      handleCartExpiration()
-    }
-  }
-
-  calcTimeLeft()
-  timerInterval = setInterval(calcTimeLeft, 1000)
-}
-
-async function handleCartExpiration() {
-  try {
-    await api.delete('/cart')
+// Watch global cart expiration to empty cart view items dynamically
+watch(() => cartStore.count, (newVal) => {
+  if (newVal === 0 && cart.value) {
     cart.value.items = []
     recalcSummary()
-    cartStore.fetchCount()
-    showExpiryAlert.value = true
-    localStorage.removeItem('cart_expiry')
-  } catch (e) {
-    console.error('Failed to clear cart on expiration:', e)
   }
-}
+})
 
 // Debounce timers per item
 const debounceTimers = {}
@@ -214,7 +163,7 @@ async function loadCart() {
   try {
     const res = await api.get('/cart')
     cart.value = res.data.cart
-    initCountdown()
+    cartStore.fetchCount()
   } catch (e) {
     console.error('Failed to load cart:', e)
     cartStore.fetchCount()
@@ -234,9 +183,7 @@ function recalcSummary() {
   cart.value.summary = { subtotal, totalItems }
 
   if (totalItems === 0) {
-    timeLeft.value = 0
-    if (timerInterval) clearInterval(timerInterval)
-    localStorage.removeItem('cart_expiry')
+    cartStore.stopCountdown()
   }
 }
 
@@ -285,10 +232,6 @@ async function removeItem(item) {
 }
 
 onMounted(loadCart)
-
-onUnmounted(() => {
-  if (timerInterval) clearInterval(timerInterval)
-})
 </script>
 
 <style scoped>
