@@ -9,6 +9,7 @@ const routes = [
   { path: '/products/:id', name: 'ProductDetail', component: () => import('../views/ProductDetail.vue') },
   { path: '/cart', name: 'Cart', component: () => import('../views/Cart.vue') },
   { path: '/checkout', name: 'Checkout', component: () => import('../views/Checkout.vue'), meta: { requiresAuth: true } },
+  { path: '/checkout/subscription/:planType', name: 'SubscriptionCheckout', component: () => import('../pages/SubscriptionCheckout.vue'), meta: { requiresAuth: true } },
   { path: '/subscriptions', name: 'Subscriptions', component: () => import('../views/Subscriptions.vue') },
   { path: '/about', name: 'About', component: () => import('../views/About.vue') },
   { path: '/contact', name: 'Contact', component: () => import('../views/Contact.vue') },

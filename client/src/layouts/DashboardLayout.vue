@@ -94,7 +94,10 @@ watch(() => route.path, () => {
   border-right: 1px solid rgba(255, 255, 255, 0.06);
   transition: width 0.3s, transform 0.3s ease-in-out;
   flex-shrink: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
 }
 .dashboard-sidebar.collapsed { width: 60px; }
 .dashboard-sidebar .nav-link {

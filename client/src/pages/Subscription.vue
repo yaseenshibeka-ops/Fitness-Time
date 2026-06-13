@@ -21,7 +21,7 @@
             </table>
             <div class="d-flex gap-2 mt-3">
               <button class="btn btn-outline-light" @click="cancelSub" :disabled="submitting">Cancel Subscription</button>
-              <button class="btn btn-primary" @click="showUpgrade = true">Upgrade</button>
+              <router-link to="/subscriptions" class="btn btn-primary">Upgrade</router-link>
             </div>
           </div>
         </div>
@@ -49,7 +49,7 @@
               <ul class="list-unstyled text-start mb-3">
                 <li v-for="f in plan.features" :key="f" class="mb-1 small"><i class="bi bi-check-circle-fill text-success me-1"></i>{{ f }}</li>
               </ul>
-              <button class="btn w-100" :class="plan.recommended ? 'btn-primary' : 'btn-outline-light'" @click="subscribe(plan.slug)" :disabled="submitting">{{ plan.name === 'Premium' ? 'Upgrade' : 'Subscribe' }}</button>
+              <router-link :to="`/checkout/subscription/${plan.slug}`" class="btn w-100" :class="plan.recommended ? 'btn-primary' : 'btn-outline-light'">{{ plan.name === 'Premium' ? 'Upgrade' : 'Subscribe' }}</router-link>
             </div>
           </div>
         </div>
@@ -67,7 +67,6 @@ const subscription = ref(null)
 const loading = ref(true)
 const submitting = ref(false)
 const msg = ref('')
-const showUpgrade = ref(false)
 
 const plans = [
   { name: 'Basic', slug: 'basic', price: 10000, features: ['Monthly progress tracking', 'Basic reports', 'Goal monitoring'] },
@@ -87,16 +86,6 @@ async function fetchSub() {
     subscription.value = res.data.subscription
   } catch (e) { subscription.value = null }
   finally { loading.value = false }
-}
-
-async function subscribe(planType) {
-  submitting.value = true
-  try {
-    await api.post('/subscriptions', { planType })
-    msg.value = `Subscribed to ${planType} plan!`
-    await fetchSub()
-  } catch (e) { msg.value = 'Subscription failed' }
-  finally { submitting.value = false }
 }
 
 async function cancelSub() {

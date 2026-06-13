@@ -12,7 +12,7 @@
             <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Goal monitoring</li>
             <li class="mb-2"><i class="bi bi-x-circle text-muted me-2"></i> Personalized recommendations</li>
           </ul>
-          <button v-if="auth.isLoggedIn" class="btn btn-outline-light w-100" @click="subscribe('basic')" :disabled="submitting">Get Started</button>
+          <router-link v-if="auth.isLoggedIn" :to="`/checkout/subscription/basic`" class="btn btn-outline-light w-100">Get Started</router-link>
           <router-link v-else to="/register" class="btn btn-outline-light w-100">Get Started</router-link>
         </div>
       </div>
@@ -27,32 +27,14 @@
             <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Personalized recommendations</li>
             <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Advanced reports</li>
           </ul>
-          <button v-if="auth.isLoggedIn" class="btn btn-primary w-100" @click="subscribe('premium')" :disabled="submitting">Upgrade to Premium</button>
+          <router-link v-if="auth.isLoggedIn" :to="`/checkout/subscription/premium`" class="btn btn-primary w-100">Upgrade to Premium</router-link>
           <router-link v-else to="/register" class="btn btn-primary w-100">Upgrade to Premium</router-link>
         </div>
       </div>
     </div>
-    <div v-if="msg" class="text-center mt-4"><div class="alert alert-success d-inline-block py-2">{{ msg }}</div></div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import api from '../services/api'
 import { auth } from '../stores/auth'
-
-const submitting = ref(false)
-const msg = ref('')
-
-async function subscribe(plan) {
-  submitting.value = true
-  try {
-    await api.post('/subscriptions', { planType: plan })
-    msg.value = `Subscribed to ${plan} plan successfully!`
-  } catch (e) {
-    msg.value = e?.message || 'Subscription failed'
-  } finally {
-    submitting.value = false
-  }
-}
 </script>

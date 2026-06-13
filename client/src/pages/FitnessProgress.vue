@@ -14,7 +14,7 @@
     <div v-if="!loading && progress.length" class="row g-3 mb-4">
       <div class="col-md-3 col-sm-6">
         <div class="stat-card d-flex align-items-center gap-3 p-3">
-          <div class="stat-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded">
+          <div class="stat-icon icon-cyan flex-shrink-0 d-flex align-items-center justify-content-center rounded">
             <i class="bi bi-person"></i>
           </div>
           <div class="min-w-0">
@@ -30,7 +30,7 @@
 
       <div class="col-md-3 col-sm-6">
         <div class="stat-card d-flex align-items-center gap-3 p-3">
-          <div class="stat-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded">
+          <div class="stat-icon icon-purple flex-shrink-0 d-flex align-items-center justify-content-center rounded">
             <i class="bi bi-percent"></i>
           </div>
           <div class="min-w-0">
@@ -46,26 +46,26 @@
 
       <div class="col-md-3 col-sm-6">
         <div class="stat-card d-flex align-items-center gap-3 p-3">
-          <div class="stat-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded">
+          <div class="stat-icon icon-indigo flex-shrink-0 d-flex align-items-center justify-content-center rounded">
             <i class="bi bi-activity"></i>
           </div>
           <div class="min-w-0">
             <div class="stat-label text-uppercase small mb-1">Workouts Logged</div>
             <div class="stat-value">{{ workoutCount }}</div>
-            <div class="stat-trend mt-1">Active Tracker</div>
+            <div class="stat-trend mt-1 text-accent">Active Tracker</div>
           </div>
         </div>
       </div>
 
       <div class="col-md-3 col-sm-6">
         <div class="stat-card d-flex align-items-center gap-3 p-3">
-          <div class="stat-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded">
+          <div class="stat-icon icon-orange flex-shrink-0 d-flex align-items-center justify-content-center rounded">
             <i class="bi bi-fire"></i>
           </div>
           <div class="min-w-0">
             <div class="stat-label text-uppercase small mb-1">Calories Burned</div>
-            <div class="stat-value">{{ totalCalories.toLocaleString() }} kcal</div>
-            <div class="stat-trend mt-1">Cumulative</div>
+            <div class="stat-value text-calories">{{ totalCalories.toLocaleString() }} kcal</div>
+            <div class="stat-trend mt-1 text-muted">Cumulative</div>
           </div>
         </div>
       </div>
@@ -264,7 +264,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { useFitnessStore } from '../stores/fitness'
 import { Chart, registerables } from 'chart.js'
 
@@ -280,6 +280,7 @@ const progressChartCanvas = ref(null)
 const chartMetric = ref('weight')
 const timeframe = ref('30') // default to 30 days
 let chartInstance = null
+let themeObserver = null
 
 const form = ref({
   recorded_date: new Date().toISOString().split('T')[0],
@@ -370,6 +371,11 @@ function openAdd() {
   }
 }
 
+// Keep close modal helper
+function closeModal() {
+  document.getElementById('closeProgressModal')?.click()
+}
+
 function openEdit(record) {
   editingId.value = record.progress_id
   showMeasurements.value = !!(record.chest_cm || record.waist_cm || record.hips_cm || record.biceps_cm)
@@ -397,7 +403,7 @@ async function save() {
     } else {
       await addRecord(form.value)
     }
-    document.getElementById('closeProgressModal')?.click()
+    closeModal()
     await updateChartData()
   } catch (e) {
     alert(e.message || 'Failed to save progress record')
@@ -471,6 +477,17 @@ function renderChart() {
     type = 'bar'
   }
 
+  // Get active theme variables
+  const isLight = document.documentElement.classList.contains('light')
+  const gridColor = isLight ? 'rgba(15, 23, 42, 0.06)' : 'rgba(255, 255, 255, 0.04)'
+  const ticksColor = isLight ? '#475569' : '#94A3B8'
+  const ptBorderColor = isLight ? '#FFFFFF' : '#090D1A'
+  
+  const tooltipBg = isLight ? '#FFFFFF' : '#121829'
+  const tooltipTitle = isLight ? '#0F172A' : '#F8FAFC'
+  const tooltipBody = isLight ? '#475569' : '#94A3B8'
+  const tooltipBorder = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.08)'
+
   chartInstance = new Chart(progressChartCanvas.value, {
     type: type,
     data: {
@@ -485,7 +502,7 @@ function renderChart() {
         tension: 0.35,
         fill: type === 'line',
         pointBackgroundColor: color,
-        pointBorderColor: '#090D1A',
+        pointBorderColor: ptBorderColor,
         pointBorderWidth: 2,
         pointRadius: 4,
         pointHoverRadius: 6,
@@ -498,10 +515,10 @@ function renderChart() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#121829',
-          titleColor: '#F8FAFC',
-          bodyColor: '#94A3B8',
-          borderColor: 'rgba(255, 255, 255, 0.08)',
+          backgroundColor: tooltipBg,
+          titleColor: tooltipTitle,
+          bodyColor: tooltipBody,
+          borderColor: tooltipBorder,
           borderWidth: 1,
           padding: 10,
           cornerRadius: 8,
@@ -511,11 +528,11 @@ function renderChart() {
       scales: {
         x: {
           grid: { display: false },
-          ticks: { color: '#94A3B8', font: { family: 'Inter', size: 11 } }
+          ticks: { color: ticksColor, font: { family: 'Inter', size: 11 } }
         },
         y: {
-          grid: { color: 'rgba(255, 255, 255, 0.04)', drawTicks: false },
-          ticks: { color: '#94A3B8', font: { family: 'Inter', size: 11 } }
+          grid: { color: gridColor, drawTicks: false },
+          ticks: { color: ticksColor, font: { family: 'Inter', size: 11 } }
         }
       }
     }
@@ -525,77 +542,157 @@ function renderChart() {
 onMounted(async () => {
   await fetchProgress()
   renderChart()
+
+  // Track theme switches
+  themeObserver = new MutationObserver(() => {
+    renderChart()
+  })
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+})
+
+onUnmounted(() => {
+  if (themeObserver) {
+    themeObserver.disconnect()
+  }
 })
 </script>
 
 <style scoped>
+/* Smooth animations and transitions */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
 .dash-card {
-  background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
 }
 .dash-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.15);
 }
 
 .stat-card {
-  background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  min-height: 80px;
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  min-height: 85px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 }
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.18);
+}
+
 .stat-icon {
-  width: 40px;
-  height: 40px;
-  background: rgba(99, 102, 241, 0.12);
-  color: var(--primary);
-  font-size: 1rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px !important;
+  font-size: 1.25rem;
 }
+
+/* Glowing icon wrappers */
+.icon-cyan {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(6, 182, 212, 0.05));
+  color: #06B6D4;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+}
+.icon-purple {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(139, 92, 246, 0.05));
+  color: #8B5CF6;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+}
+.icon-indigo {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(99, 102, 241, 0.05));
+  color: #6366F1;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+}
+.icon-orange {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.18), rgba(249, 115, 22, 0.05));
+  color: #F97316;
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.15);
+}
+
 .stat-label {
   color: var(--text-muted);
   letter-spacing: 0.5px;
   font-weight: 600;
 }
 .stat-value {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.45rem;
+  font-weight: 800;
   color: var(--text-light);
   line-height: 1.2;
 }
 .stat-trend {
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 20px;
 }
-.trend-down { color: var(--success); }
-.trend-up { color: var(--warning); }
+.trend-down {
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+.trend-up {
+  color: #EF4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
 
+/* Premium segmented controls */
+.btn-group {
+  background: rgba(148, 163, 184, 0.08);
+  padding: 4px;
+  border-radius: 30px;
+  border: 1px solid var(--glass-border);
+}
 .btn-metric {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   color: var(--text-muted);
-  border-radius: 6px;
+  border-radius: 20px !important;
   font-size: 0.8rem;
-  padding: 4px 10px;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  font-weight: 600;
+  padding: 6px 14px;
 }
 .btn-metric:hover {
-  border-color: rgba(255, 255, 255, 0.2);
   color: var(--text-light);
 }
 .btn-metric.active {
-  background: rgba(99, 102, 241, 0.12);
-  border-color: rgba(99, 102, 241, 0.3);
-  color: var(--primary);
+  background: var(--primary) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
+
 .timeframe-select {
-  background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--surface);
+  border: 1px solid var(--glass-border);
   color: var(--text-light);
   font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 20px;
+  padding-left: 12px;
+  padding-right: 28px;
 }
 .timeframe-select:focus {
   border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: none;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
 table.table {
@@ -603,60 +700,63 @@ table.table {
 }
 table.table thead th {
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 0.75rem;
+  letter-spacing: 0.75px;
+  border-bottom: 1px solid var(--glass-border);
+  padding: 1rem 0.75rem;
 }
 table.table tbody td {
-  border-color: rgba(255, 255, 255, 0.04);
-  padding: 0.75rem;
+  border-color: var(--glass-border);
+  padding: 1rem 0.75rem;
   vertical-align: middle;
 }
-.progress-row {
-  transition: background 0.15s;
-}
 .progress-row:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(99, 102, 241, 0.06);
 }
 
 .badge-weight {
-  background: rgba(99, 102, 241, 0.1);
-  color: var(--primary);
-  font-weight: 500;
-  padding: 4px 8px;
-  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #8B5CF6;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
 }
 .badge-workout {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-light);
-  font-weight: 500;
-  padding: 4px 8px;
-  border-radius: 6px;
+  background: rgba(6, 182, 212, 0.1);
+  color: #06B6D4;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(6, 182, 212, 0.2);
 }
 .text-calories {
-  color: #f97316;
+  color: #F97316;
 }
 
 .btn-row-action {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
   color: var(--text-muted);
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  padding: 6px 10px;
+  border-radius: 8px;
 }
 .btn-row-action:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--text-light);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+html.light .btn-row-action:hover {
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--text-light);
+  border-color: rgba(15, 23, 42, 0.2);
 }
 .btn-row-danger:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.12);
   color: var(--danger);
-  border-color: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.25);
 }
 
 .min-w-0 {
@@ -666,29 +766,40 @@ table.table tbody td {
 .modal-content {
   background: var(--surface);
   color: var(--text-light);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
 }
 .modal-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 1.25rem 1.5rem;
+}
+.btn-close {
+  filter: invert(1);
+}
+html.light .btn-close {
+  filter: none;
 }
 
 .btn-outline {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--glass-border);
   color: var(--text-light);
-  border-radius: 8px;
-  font-weight: 500;
-  transition: background 0.15s, border-color 0.15s;
+  border-radius: 10px;
+  font-weight: 600;
 }
 .btn-outline:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+html.light .btn-outline:hover {
+  background: rgba(15, 23, 42, 0.06);
+  border-color: rgba(15, 23, 42, 0.25);
 }
 
 .measurements-panel {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
+  background: var(--surface-variant);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
 }
 </style>
