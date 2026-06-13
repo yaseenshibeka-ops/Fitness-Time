@@ -14,4 +14,4 @@ INSERT INTO products (name, description, price, stock_quantity, image_url, categ
 ('Premium Yoga Mat', 'Extra thick 6mm eco-friendly TPE yoga mat with alignment lines', 45000, 100, 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=400&h=300&fit=crop', 3),
 ('Whey Protein Isolate', '2.27kg pure whey protein isolate, vanilla flavour, 25g protein per serving', 65000, 50, 'https://images.unsplash.com/photo-1593095948071-474c5cc2c1cf?w=400&h=300&fit=crop', 4),
 ('Exercise Bike X500', 'Magnetic resistance spin bike with LCD display and tablet holder', 520000, 20, 'https://images.unsplash.com/photo-1534251369789-5067c8b8602a?w=400&h=300&fit=crop', 1),
-('Olympic Barbell 20kg', 'Professional 20kg Olympic barbell with 2x needle bearings, 2200lb capacity', 180000, 25, 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop', 2);
+('Olympic Barbell  20kg', 'Professional 20kg Olympic barbell with 2x needle bearings, 2200lb capacity', 180000, 25, 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop', 2);
