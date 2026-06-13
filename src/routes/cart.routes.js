@@ -29,5 +29,6 @@ router.put('/items/:itemId',
 );
 
 router.delete('/items/:itemId', cartController.removeItem);
+router.delete('/', cartController.clearCart);
 
 module.exports = router;

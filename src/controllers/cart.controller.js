@@ -37,3 +37,12 @@ exports.removeItem = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.clearCart = async (req, res, next) => {
+    try {
+        await CartService.clearCart(req.user.userId);
+        res.status(200).json({ status: 'success', message: 'Cart cleared successfully', data: { cart: { items: [], summary: { subtotal: 0, totalItems: 0 } } } });
+    } catch (error) {
+        next(error);
+    }
+};

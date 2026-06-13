@@ -140,7 +140,11 @@ async function confirmPayment() {
   error.value = ''
   try {
     const subRes = await api.post('/subscriptions', { planType: plan.value.slug })
-    const subscriptionId = subRes.data.subscriptionId
+    const subscriptionId = subRes.subscriptionId || subRes.data?.subscriptionId || subRes.data?.data?.subscriptionId
+
+    if (!subscriptionId) {
+      throw new Error('Failed to create subscription. Please try again.')
+    }
 
     const paymentPayload = {
       subscriptionId,
