@@ -1,6 +1,6 @@
 <template>
   <div id="app-root">
-    <AppNavbar v-if="showMainNav" />
+    <AppNavbar />
     <main>
       <router-view />
     </main>
