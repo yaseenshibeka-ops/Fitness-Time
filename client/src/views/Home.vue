@@ -7,7 +7,7 @@
         <h1 class="font-display-lg text-display-lg text-[var(--text-light)]">Transform Your Fitness Journey with FitTrack Rwanda</h1>
         <p class="font-body-lg text-body-lg text-[var(--text-muted)]">Shop premium fitness products, track your progress, and achieve your goals with Rwanda's leading athletic platform.</p>
         <div class="flex flex-wrap gap-md pt-sm">
-          <router-link to="/products" class="bg-primary text-on-primary px-lg py-sm rounded-2xl font-headline-md text-headline-md hover-lift">Shop Now</router-link>
+          <router-link to="/products" class="bg-primary text-white px-lg py-sm rounded-2xl font-headline-md text-headline-md hover-lift">Shop Now</router-link>
           <router-link to="/register" class="border-2 border-[var(--text-light)] text-[var(--text-light)] px-lg py-sm rounded-2xl font-headline-md text-headline-md hover-lift">Start Tracking</router-link>
         </div>
       </div>
@@ -79,7 +79,7 @@
               {{ f.text }}
             </li>
           </ul>
-          <button class="w-full py-sm rounded-2xl font-label-md text-label-md" :class="idx === 1 ? 'bg-primary text-on-primary hover-lift' : 'border-2 border-primary text-primary hover:bg-primary/5'">{{ plan.cta }}</button>
+          <button class="w-full py-sm rounded-2xl font-label-md text-label-md" :class="idx === 1 ? 'bg-primary text-white hover-lift' : 'border-2 border-primary text-primary hover:bg-primary/5'">{{ plan.cta }}</button>
         </div>
       </div>
     </section>
@@ -103,7 +103,7 @@
         <div class="space-y-md">
           <h2 class="font-headline-lg text-headline-lg">Your Progress, Visualized.</h2>
           <p class="font-body-lg text-body-lg text-on-surface-variant">Our intelligent dashboard gives you a real-time view of your fitness journey. Identify plateaus, celebrate wins, and adjust your plans on the fly.</p>
-          <router-link to="/register" class="bg-primary text-on-primary px-lg py-sm rounded-2xl font-label-md text-label-md hover-lift">Try Free Demo</router-link>
+          <router-link to="/register" class="bg-primary text-white px-lg py-sm rounded-2xl font-label-md text-label-md hover-lift">Try Free Demo</router-link>
         </div>
         <div class="glass-card p-sm rounded-2xl border border-surface-variant shadow-inner relative overflow-hidden h-80">
           <div class="absolute inset-0 bg-gradient-to-br from-primary-container/20 to-transparent"></div>
@@ -176,7 +176,7 @@
       <div class="relative z-10 text-center space-y-md px-margin-mobile">
         <h2 class="font-display-lg text-display-lg text-surface text-shadow-lg">Ready to Achieve Your Fitness Goals?</h2>
         <p class="text-surface-variant font-body-lg text-body-lg max-w-2xl mx-auto">Join thousands of athletes in Rwanda who are tracking their journey to excellence with FitTrack.</p>
-        <router-link to="/register" class="bg-primary text-on-primary px-xl py-sm rounded-2xl font-headline-md text-headline-md hover-lift">Get Started Now</router-link>
+        <router-link to="/register" class="bg-primary text-white px-xl py-sm rounded-2xl font-headline-md text-headline-md hover-lift">Get Started Now</router-link>
       </div>
     </section>
   </div>

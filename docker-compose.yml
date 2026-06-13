@@ -18,6 +18,7 @@ services:
       - ./src:/app/src
       - ./public:/app/public
       - ./client/src:/app/client/src
+      - ./client/dist:/app/client/dist
       - ./client/index.html:/app/client/index.html
       - ./client/vite.config.js:/app/client/vite.config.js
       - ./client/package.json:/app/client/package.json
