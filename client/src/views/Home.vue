@@ -186,6 +186,7 @@
 import { ref, onMounted } from 'vue'
 import api from '../services/api'
 import { useRouter } from 'vue-router'
+import { cart } from '../stores/cart'
 
 const router = useRouter()
 
@@ -258,6 +259,7 @@ async function addToCart(p) {
   if (!localStorage.getItem('token')) return router.push('/login')
   try {
     await api.post('/cart/items', { productId: p.product_id, quantity: 1 })
+    cart.fetchCount()
   } catch { /* ignore */ }
 }
 </script>

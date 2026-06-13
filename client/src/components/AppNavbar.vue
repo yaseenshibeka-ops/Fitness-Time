@@ -29,7 +29,7 @@
           <li class="nav-item">
             <router-link class="nav-link position-relative" to="/cart" title="Cart">
               <i class="bi bi-cart3"></i>
-              <span v-if="cartCount > 0" class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
+              <span v-if="cart.count > 0" class="cart-badge">{{ cart.count > 99 ? '99+' : cart.count }}</span>
             </router-link>
           </li>
           <li class="nav-item">
@@ -81,15 +81,14 @@
 <script setup>
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { auth } from '../stores/auth'
+import { cart } from '../stores/cart'
 import { useRouter } from 'vue-router'
-import api from '../services/api'
 
 const router = useRouter()
 const mobileOpen = ref(false)
 const searchOpen = ref(false)
 const query = ref('')
 const searchInput = ref(null)
-const cartCount = ref(0)
 
 watch(searchOpen, async (val) => {
   if (val) {
@@ -97,15 +96,6 @@ watch(searchOpen, async (val) => {
     searchInput.value?.focus()
   }
 })
-
-async function fetchCartCount() {
-  if (!auth.isLoggedIn) return
-  try {
-    const res = await api.get('/cart')
-    const items = res.data?.cart?.items || []
-    cartCount.value = items.reduce((sum, it) => sum + (it.quantity || 0), 0)
-  } catch { cartCount.value = 0 }
-}
 
 const isDark = ref(true)
 
@@ -121,7 +111,7 @@ onMounted(() => {
     document.documentElement.classList.add('dark')
   }
 
-  if (auth.isLoggedIn) fetchCartCount()
+  if (auth.isLoggedIn) cart.fetchCount()
 })
 
 function toggleTheme() {

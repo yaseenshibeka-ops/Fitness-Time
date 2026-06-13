@@ -335,6 +335,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../services/api'
 import { auth } from '../stores/auth'
+import { cart as cartStore } from '../stores/cart'
 
 const router = useRouter()
 
@@ -465,6 +466,7 @@ async function placeOrder() {
 
     paymentResult.value = payRes.data
     cart.value = null
+    cartStore.fetchCount()
     currentStep.value = 3
     showSuccess.value = true
   } catch (e) {

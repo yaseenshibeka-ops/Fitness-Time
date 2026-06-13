@@ -358,6 +358,7 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../services/api'
 import { auth } from '../stores/auth'
+import { cart } from '../stores/cart'
 
 const route = useRoute()
 const router = useRouter()
@@ -521,7 +522,7 @@ async function addToCart() {
     await api.post('/cart/items', { productId: product.value.product_id, quantity: qty.value })
     cartMsg.value = 'Added to cart successfully!'
     cartMsgType.value = 'success'
-    updateCartBadge()
+    cart.fetchCount()
   } catch (e) {
     cartMsg.value = e?.message || 'Failed to add to cart'
     cartMsgType.value = 'error'
@@ -535,7 +536,7 @@ async function quickAddToCart(p) {
   if (!auth.isLoggedIn) return router.push('/login')
   try {
     await api.post('/cart/items', { productId: p.product_id, quantity: 1 })
-    updateCartBadge()
+    cart.fetchCount()
   } catch { /* ignore */ }
 }
 
@@ -582,15 +583,6 @@ async function submitReview() {
     cartMsg.value = e?.message || 'Failed to submit review'
     cartMsgType.value = 'error'
     setTimeout(() => cartMsg.value = '', 3000)
-  }
-}
-
-// Cart badge update
-function updateCartBadge() {
-  const el = document.querySelector('.cart-badge')
-  if (el) {
-    const cur = parseInt(el.textContent) || 0
-    el.textContent = cur + qty.value
   }
 }
 

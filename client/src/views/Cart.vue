@@ -129,6 +129,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '../services/api'
+import { cart as cartStore } from '../stores/cart'
 
 const cart = ref(null)
 const loading = ref(true)
@@ -143,6 +144,7 @@ async function loadCart() {
     cart.value = res.data.cart
   } catch (e) {
     console.error('Failed to load cart:', e)
+    cartStore.fetchCount()
   } finally {
     loading.value = false
   }
@@ -176,6 +178,7 @@ function changeQty(item, delta) {
     busyItems.value[item.cart_item_id] = true
     try {
       await api.put(`/cart/items/${item.cart_item_id}`, { quantity: newQty })
+      cartStore.fetchCount()
     } catch (e) {
       // Rollback on error â€” reload actual state
       await loadCart()
@@ -192,9 +195,10 @@ async function removeItem(item) {
   cart.value.items.splice(removedIndex, 1)
   recalcSummary()
 
-  try {
-    await api.delete(`/cart/items/${item.cart_item_id}`)
-  } catch (e) {
+    try {
+      await api.delete(`/cart/items/${item.cart_item_id}`)
+      cartStore.fetchCount()
+    } catch (e) {
     // Rollback on error
     cart.value.items.splice(removedIndex, 0, removedItem)
     recalcSummary()
