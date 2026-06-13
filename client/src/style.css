@@ -13,6 +13,15 @@
   --text-light: #F8FAFC;
   --text-muted: #94A3B8;
   --font-primary: 'Inter', sans-serif;
+  --primary-container: rgba(99, 102, 241, 0.2);
+  --on-primary-container: #E0E7FF;
+  --secondary-container: rgba(6, 182, 212, 0.2);
+  --on-secondary-container: #CFFAFE;
+  --surface-container-lowest: rgba(18, 24, 41, 0.6);
+  --outline-variant: rgba(148, 163, 184, 0.3);
+  --surface-variant: rgba(148, 163, 184, 0.15);
+  --on-surface-variant: #94A3B8;
+  --primary-fixed: #A5B4FC;
 }
 
 html.light {
@@ -22,6 +31,15 @@ html.light {
   --glass-border: rgba(15, 23, 42, 0.08);
   --text-light: #0F172A;
   --text-muted: #475569;
+  --primary-container: #E0E7FF;
+  --on-primary-container: #312E81;
+  --secondary-container: #CFFAFE;
+  --on-secondary-container: #155E75;
+  --surface-container-lowest: #FFFFFF;
+  --outline-variant: rgba(15, 23, 42, 0.12);
+  --surface-variant: rgba(15, 23, 42, 0.05);
+  --on-surface-variant: #475569;
+  --primary-fixed: #6366F1;
 }
 html.light .navbar-dark {
   background-color: rgba(248, 250, 252, 0.85) !important;

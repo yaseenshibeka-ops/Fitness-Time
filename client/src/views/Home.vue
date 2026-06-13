@@ -52,7 +52,7 @@
                 <span class="text-caption font-caption">{{ p.rating || 4.0 }} ({{ p.review_count || 0 }})</span>
               </div>
               <p class="font-headline-md text-headline-md text-primary">{{ Number(p.price).toLocaleString() }} RWF</p>
-              <button class="w-full bg-secondary-container text-on-secondary-container py-xs rounded-lg font-label-md text-label-md mt-sm hover:bg-primary-container transition-colors" @click.stop="addToCart(p)" :disabled="p.stock === 0">Add to Cart</button>
+              <button class="w-full bg-primary text-white py-xs rounded-lg font-label-md text-label-md mt-sm hover:brightness-110 transition-all" @click.stop="addToCart(p)" :disabled="p.stock === 0">Add to Cart</button>
             </div>
           </div>
         </div>
