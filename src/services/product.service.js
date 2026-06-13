@@ -52,11 +52,13 @@ class ProductService {
 
         const product = products[0];
 
-        // Attach average rating
-        const [[{ avgRating, reviewCount }]] = await pool.query(
-            'SELECT COALESCE(AVG(rating), 0) as avgRating, COUNT(*) as reviewCount FROM product_reviews WHERE product_id = ?',
+        // Attach average rating (PostgreSQL returns lowercase column aliases)
+        const [[row]] = await pool.query(
+            'SELECT COALESCE(AVG(rating), 0) as avgrating, COUNT(*) as reviewcount FROM product_reviews WHERE product_id = ?',
             [productId]
         );
+        const avgRating = parseFloat(row.avgrating || 0);
+        const reviewCount = parseInt(row.reviewcount || 0, 10);
         product.rating = parseFloat(avgRating.toFixed(1));
         product.review_count = reviewCount;
 
