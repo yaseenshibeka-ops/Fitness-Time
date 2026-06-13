@@ -2,7 +2,7 @@
   <div>
     <!-- Top Header & Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-      <h5 class="fw-bold mb-0 text-white">
+      <h5 class="fw-bold mb-0 text-light">
         <i class="bi bi-graph-up text-cyan me-2"></i>Fitness Progress Tracking
       </h5>
       <button class="btn btn-primary px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#progressModal" @click="openAdd">

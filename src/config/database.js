@@ -34,10 +34,9 @@ function adaptQuery(sql, values = []) {
   // Convert common MySQL functions to PG equivalents
   adaptedSql = adaptedSql.replace(/DATE_FORMAT\(([^,]+),\s*'%Y-%m'\)/gi, "TO_CHAR($1, 'YYYY-MM')");
   adaptedSql = adaptedSql.replace(/DATE_FORMAT\(([^,]+),\s*'%Y-%m-%d'\)/gi, "TO_CHAR($1, 'YYYY-MM-DD')");
-  adaptedSql = adaptedSql.replace(/DATE_SUB\(NOW\(\),\s*INTERVAL\s*12\s*MONTH\)/gi, "NOW() - INTERVAL '12 month'");
   adaptedSql = adaptedSql.replace(/CURDATE\(\)/gi, "CURRENT_DATE");
-  adaptedSql = adaptedSql.replace(/DATE_ADD\(CURDATE\(\),\s*INTERVAL\s*1\s*MONTH\)/gi, "CURRENT_DATE + INTERVAL '1 month'");
-  adaptedSql = adaptedSql.replace(/DATE_ADD\(CURDATE\(\),\s*INTERVAL\s*7\s*DAY\)/gi, "CURRENT_DATE + INTERVAL '7 day'");
+  adaptedSql = adaptedSql.replace(/DATE_SUB\(([^,]+),\s*INTERVAL\s*(\d+)\s*([a-zA-Z]+)\)/gi, "$1 - INTERVAL '$2 $3'");
+  adaptedSql = adaptedSql.replace(/DATE_ADD\(([^,]+),\s*INTERVAL\s*(\d+)\s*([a-zA-Z]+)\)/gi, "$1 + INTERVAL '$2 $3'");
   adaptedSql = adaptedSql.replace(/MONTH\(([^)]+)\)/gi, "EXTRACT(MONTH FROM $1)");
   adaptedSql = adaptedSql.replace(/YEAR\(([^)]+)\)/gi, "EXTRACT(YEAR FROM $1)");
 
