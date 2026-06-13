@@ -7,10 +7,10 @@ services:
     environment:
       - PORT=3000
       - DB_HOST=db
-      - DB_USER=root
+      - DB_USER=postgres
       - DB_PASSWORD=secret
       - DB_NAME=fittrack
-      - DB_PORT=3306
+      - DB_PORT=5432
       - JWT_SECRET=dev_secret_key_123
       - JWT_EXPIRES_IN=24h
       - NODE_ENV=development
@@ -36,21 +36,22 @@ services:
       start_period: 15s
 
   db:
-    image: mysql:8.0
+    image: postgres:15-alpine
     container_name: fittrack-db
     ports:
-      - "3307:3306"
+      - "5432:5432"
     environment:
-      - MYSQL_ROOT_PASSWORD=secret
-      - MYSQL_DATABASE=fittrack
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=fittrack
     volumes:
-      - mysql_data:/var/lib/mysql
+      - pg_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-psecret"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d fittrack"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
-  mysql_data:
+  pg_data:
