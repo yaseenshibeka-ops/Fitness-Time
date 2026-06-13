@@ -53,6 +53,44 @@ async function migrate() {
             }
         }
         
+        
+        console.log('Synchronizing primary key sequences...');
+        const tablesToSync = [
+            { table: 'users', key: 'user_id' },
+            { table: 'categories', key: 'category_id' },
+            { table: 'products', key: 'product_id' },
+            { table: 'orders', key: 'order_id' },
+            { table: 'order_items', key: 'item_id' },
+            { table: 'carts', key: 'cart_id' },
+            { table: 'cart_items', key: 'cart_item_id' },
+            { table: 'subscriptions', key: 'subscription_id' },
+            { table: 'payments', key: 'payment_id' },
+            { table: 'fitness_progress', key: 'progress_id' },
+            { table: 'fitness_goals', key: 'goal_id' },
+            { table: 'workout_history', key: 'workout_id' },
+            { table: 'user_notifications', key: 'notification_id' },
+            { table: 'notifications', key: 'notification_id' }
+        ];
+
+        for (const { table, key } of tablesToSync) {
+            try {
+                // Check if sequence exists
+                const seqRes = await client.query(
+                    `SELECT pg_get_serial_sequence($1, $2) as seq`, 
+                    [table, key]
+                );
+                const seq = seqRes.rows[0]?.seq;
+                if (seq) {
+                    await client.query(
+                        `SELECT setval($1, COALESCE(MAX(${key}), 1)) FROM ${table}`,
+                        [seq]
+                    );
+                }
+            } catch (err) {
+                console.warn(`Could not sync sequence for table ${table}:`, err.message);
+            }
+        }
+        
         console.log('Migration completed successfully.');
     } catch (error) {
         console.error('Migration failed:', error);
