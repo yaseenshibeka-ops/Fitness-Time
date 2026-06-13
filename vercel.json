@@ -1,11 +1,9 @@
 {
-  "buildCommand": "cd client && npm run build",
+  "buildCommand": "cd client && npx vite build",
+  "outputDirectory": "client/dist",
   "installCommand": "npm install && cd client && npm install",
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api"
-    }
+    { "source": "/api/(.*)", "destination": "/api" }
   ],
   "functions": {
     "api/index.js": {
