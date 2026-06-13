@@ -471,7 +471,8 @@ async function placeOrder() {
     currentStep.value = 3
     showSuccess.value = true
   } catch (e) {
-    const msg = e?.response?.data?.message || e?.message || e?.data?.message || ''
+    console.error('Checkout error:', e)
+    const msg = typeof e === 'string' ? e : e?.response?.data?.message || e?.message || e?.data?.message || (e?.response?.data ? JSON.stringify(e.response.data) : '')
     if (msg.includes('stock')) {
       error.value = 'Some items in your cart are out of stock. Please update your cart.'
     } else if (msg.includes('Cart is empty')) {
