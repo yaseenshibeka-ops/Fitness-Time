@@ -84,6 +84,7 @@ pgPool.query = async function (sql, values) {
   // mysql2 allows query(sql, callback) or query(sql, values)
   // Our code uses: await pool.query(sql, values)
   const pgSql = adaptQuery(sql, values);
+  console.log('ADAPTED SQL:', pgSql);
   const result = await originalQuery(pgSql, values);
   return formatResult(sql, result);
 };
