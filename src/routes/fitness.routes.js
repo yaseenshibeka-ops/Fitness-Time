@@ -18,6 +18,13 @@ router.post('/progress',
 
 router.get('/progress', fitnessController.getProgressHistory);
 router.delete('/progress/:id', fitnessController.deleteProgress);
+router.put('/progress/:id', 
+    [
+        body('recorded_date').notEmpty().isISO8601().withMessage('Valid recorded date is required')
+    ],
+    validate,
+    fitnessController.updateProgress
+);
 
 router.post('/goals', 
     [

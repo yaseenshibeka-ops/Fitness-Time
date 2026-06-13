@@ -28,6 +28,16 @@ export function useFitnessStore() {
     await fetchProgress()
   }
 
+  async function deleteRecord(id) {
+    await api.delete(`/fitness/progress/${id}`)
+    await fetchProgress()
+  }
+
+  async function updateRecord(id, data) {
+    await api.put(`/fitness/progress/${id}`, data)
+    await fetchProgress()
+  }
+
   async function fetchGoals() {
     const res = await api.get('/user/goals')
     goals.value = res.data.goals || []
@@ -49,5 +59,5 @@ export function useFitnessStore() {
     await fetchGoals()
   }
 
-  return { stats, progress, goals, loading, fetchStats, fetchProgress, addRecord, fetchGoals, createGoal, updateGoal, deleteGoal }
+  return { stats, progress, goals, loading, fetchStats, fetchProgress, addRecord, deleteRecord, updateRecord, fetchGoals, createGoal, updateGoal, deleteGoal }
 }

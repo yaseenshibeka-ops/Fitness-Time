@@ -43,6 +43,13 @@ exports.deleteProgress = async (req, res, next) => {
     } catch (error) { next(error); }
 };
 
+exports.updateProgress = async (req, res, next) => {
+    try {
+        const result = await FitnessService.updateProgress(req.params.id, req.user.userId, req.body);
+        res.json({ status: 'success', data: result });
+    } catch (error) { next(error); }
+};
+
 exports.getDashboardStats = async (req, res, next) => {
     try {
         const stats = await FitnessService.getDashboardStats(req.user.userId);

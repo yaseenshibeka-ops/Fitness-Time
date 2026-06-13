@@ -52,6 +52,17 @@ class FitnessService {
         return { message: 'Progress record deleted' };
     }
 
+    static async updateProgress(progressId, userId, progressData) {
+        const { weight_kg, height_cm, body_fat_pct, chest_cm, waist_cm, hips_cm, biceps_cm, workout_type, duration_minutes, calories_burned, notes, recorded_date } = progressData;
+        await pool.query(
+            `UPDATE fitness_progress 
+             SET weight_kg=?, height_cm=?, body_fat_pct=?, chest_cm=?, waist_cm=?, hips_cm=?, biceps_cm=?, workout_type=?, duration_minutes=?, calories_burned=?, notes=?, recorded_date=?
+             WHERE progress_id=? AND user_id=?`,
+            [weight_kg, height_cm, body_fat_pct, chest_cm, waist_cm, hips_cm, biceps_cm, workout_type, duration_minutes, calories_burned, notes, recorded_date, progressId, userId]
+        );
+        return { message: 'Progress record updated successfully' };
+    }
+
     static async getDashboardStats(userId) {
         // Simple stats aggregation
         const [[weightStats]] = await pool.query(
