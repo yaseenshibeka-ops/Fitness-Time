@@ -24,10 +24,14 @@ if ((poolConfig.connectionString && poolConfig.connectionString.includes('neon.t
   poolConfig.ssl = { rejectUnauthorized: false };
 }
 
-poolConfig.connectionTimeoutMillis = 5000;
-poolConfig.idleTimeoutMillis = 10000;
+poolConfig.connectionTimeoutMillis = 10000;
+poolConfig.idleTimeoutMillis = 30000;
 poolConfig.max = isProduction ? 10 : 20;
 const pgPool = new Pool(poolConfig);
+
+pgPool.on('connect', (client) => {
+    client.query("SET statement_timeout = '30000'").catch(() => {});
+});
 
 // Helper to translate MySQL query strings and parameters to Postgres-compatible ones
 function adaptQuery(sql, values = []) {

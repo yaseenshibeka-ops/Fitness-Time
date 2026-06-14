@@ -16,13 +16,17 @@ class PaymentService {
         // Ensure status is correctly set based on payment method
         const initialStatus = paymentMethod === 'cash_on_delivery' ? 'pending' : 'pending';
 
-        const [result] = await pool.query(
-            `INSERT INTO payments (user_id, order_id, subscription_id, payment_method, phone_number, amount, transaction_reference, payment_status)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [userId, orderId || null, subscriptionId || null, paymentMethod, phoneNumber || null, amount, transactionRef, initialStatus]
-        );
-
-        const paymentId = result.insertId;
+        const connection = await pool.getConnection();
+        try {
+            const [result] = await connection.query(
+                `INSERT INTO payments (user_id, order_id, subscription_id, payment_method, phone_number, amount, transaction_reference, payment_status)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                [userId, orderId || null, subscriptionId || null, paymentMethod, phoneNumber || null, amount, transactionRef, initialStatus]
+            );
+            var paymentId = result.insertId;
+        } finally {
+            connection.release();
+        }
 
         // If Cash on Delivery, we can consider the payment flow initiated and awaiting manual confirmation
         if (paymentMethod === 'cash_on_delivery') {
