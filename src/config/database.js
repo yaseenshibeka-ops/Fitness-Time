@@ -74,9 +74,14 @@ function formatResult(sql, pgResult) {
     let insertId = null;
     if (trimmed.startsWith('INSERT') && rows[0]) {
       const row = rows[0];
-      const idKey = Object.keys(row).find(k => k.toLowerCase().endsWith('_id') || k.toLowerCase() === 'id');
+      const keys = Object.keys(row);
+      const idKey = keys.find(k => k.toLowerCase().endsWith('_id') || k.toLowerCase() === 'id');
       if (idKey) {
         insertId = parseInt(row[idKey], 10) || row[idKey];
+      }
+      // Fallback: use first column value (typically PK / SERIAL)
+      if (insertId === null && keys.length > 0) {
+        insertId = parseInt(row[keys[0]], 10) || row[keys[0]];
       }
     }
     const info = {
