@@ -18,12 +18,12 @@ class PaymentService {
 
         const connection = await pool.getConnection();
         try {
-            const [result] = await connection.query(
+            const raw = await connection.rawQuery(
                 `INSERT INTO payments (user_id, order_id, subscription_id, payment_method, phone_number, amount, transaction_reference, payment_status)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
                 [userId, orderId || null, subscriptionId || null, paymentMethod, phoneNumber || null, amount, transactionRef, initialStatus]
             );
-            var paymentId = result.insertId;
+            var paymentId = raw.rows[0]?.payment_id;
         } finally {
             connection.release();
         }

@@ -116,6 +116,12 @@ pgPool.getConnection = async function () {
     const result = await originalClientQuery(pgSql, values);
     return formatResult(sql, result);
   };
+
+  // Bypasses formatResult, returns raw pg.Result (use when insertId is needed)
+  client.rawQuery = async function (sql, values) {
+    const pgSql = adaptQuery(sql, values);
+    return await originalClientQuery(pgSql, values);
+  };
   
   // Transaction helpers
   client.beginTransaction = async function () {
