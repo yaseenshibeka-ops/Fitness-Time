@@ -18,12 +18,20 @@ class PaymentService {
 
         const connection = await pool.getConnection();
         try {
-            const raw = await connection.rawQuery(
+            const [result] = await connection.query(
                 `INSERT INTO payments (user_id, order_id, subscription_id, payment_method, phone_number, amount, transaction_reference, payment_status)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
                 [userId, orderId || null, subscriptionId || null, paymentMethod, phoneNumber || null, amount, transactionRef, initialStatus]
             );
-            var paymentId = raw.rows[0]?.payment_id;
+            var paymentId = result.insertId;
+            // Fallback: if formatResult returned null (pg compat issue), query directly
+            if (!paymentId) {
+                const [rows] = await connection.query(
+                    'SELECT payment_id FROM payments WHERE transaction_reference = ?',
+                    [transactionRef]
+                );
+                paymentId = rows[0]?.payment_id;
+            }
         } finally {
             connection.release();
         }
