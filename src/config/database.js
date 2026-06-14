@@ -6,6 +6,9 @@ const isProduction = process.env.NODE_ENV === 'production';
 let poolConfig = {};
 if (process.env.DATABASE_URL) {
   poolConfig.connectionString = process.env.DATABASE_URL;
+  if (poolConfig.connectionString.includes('-pooler')) {
+    poolConfig.connectionString = poolConfig.connectionString.replace('-pooler', '');
+  }
 } else {
   poolConfig = {
     host: process.env.DB_HOST || 'localhost',
