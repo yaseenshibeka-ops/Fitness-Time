@@ -26,8 +26,7 @@ if ((poolConfig.connectionString && poolConfig.connectionString.includes('neon.t
 
 poolConfig.connectionTimeoutMillis = 5000;
 poolConfig.idleTimeoutMillis = 10000;
-poolConfig.max = isProduction ? 3 : 20;
-poolConfig.statement_timeout = 15000;
+poolConfig.max = isProduction ? 10 : 20;
 const pgPool = new Pool(poolConfig);
 
 // Helper to translate MySQL query strings and parameters to Postgres-compatible ones
