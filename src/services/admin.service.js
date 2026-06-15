@@ -231,6 +231,13 @@ class AdminService {
     return { message: 'Order status updated' };
   }
 
+  static async deleteOrder(orderId) {
+    const [orders] = await pool.query('SELECT * FROM orders WHERE order_id=?', [orderId]);
+    if (!orders.length) throw { statusCode: 404, message: 'Order not found' };
+    await pool.query('DELETE FROM orders WHERE order_id=?', [orderId]);
+    return { message: 'Order deleted successfully' };
+  }
+
   // ===================== PAYMENTS =====================
 
   static async getAllPayments({ page = 1, limit = 20, search, status, payment_method } = {}) {

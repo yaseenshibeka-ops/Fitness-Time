@@ -33,6 +33,7 @@ router.delete('/categories/:id', ctrl.deleteCategory);
 router.get('/orders', ctrl.getOrders);
 router.get('/orders/:id', ctrl.getOrderDetail);
 router.put('/orders/:id/status', ctrl.updateOrderStatus);
+router.delete('/orders/:id', ctrl.deleteOrder);
 
 // Payments
 router.get('/payments', ctrl.getPayments);

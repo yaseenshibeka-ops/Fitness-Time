@@ -76,6 +76,10 @@ exports.updateOrderStatus = async (req, res, next) => {
   try { const result = await AdminService.updateOrderStatus(req.params.id, req.body.status); res.json({ status: 'success', data: result }); }
   catch (e) { next(e); }
 };
+exports.deleteOrder = async (req, res, next) => {
+  try { const result = await AdminService.deleteOrder(req.params.id); res.json({ status: 'success', data: result }); }
+  catch (e) { next(e); }
+};
 
 // Payments
 exports.getPayments = async (req, res, next) => {
