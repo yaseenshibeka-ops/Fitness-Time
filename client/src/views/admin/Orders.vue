@@ -12,15 +12,17 @@
           <option value="cancelled">Cancelled</option>
         </select>
         <input type="search" class="form-control form-control-sm" placeholder="Reference..." v-model="search" @input="debouncedLoad" style="width:180px;">
+        <button v-if="selected.length" class="btn btn-sm btn-outline-danger" @click="bulkDelete">Delete Selected ({{ selected.length }})</button>
       </div>
     </div>
 
     <div v-if="loading" class="text-center py-5"><div class="spinner"></div></div>
     <div v-else-if="orders.length" class="glass-card p-0 overflow-hidden">
       <table class="table table-dark table-hover mb-0">
-        <thead><tr><th>#</th><th>Reference</th><th>Customer</th><th>Total</th><th>Status</th><th>Payment</th><th>Date</th><th></th></tr></thead>
+        <thead><tr><th><input type="checkbox" @change="toggleAll" :checked="selected.length===orders.length"></th><th>#</th><th>Reference</th><th>Customer</th><th>Total</th><th>Status</th><th>Payment</th><th>Date</th><th></th></tr></thead>
         <tbody>
           <tr v-for="o in orders" :key="o.order_id">
+            <td><input type="checkbox" :value="o.order_id" v-model="selected"></td>
             <td>{{ o.order_id }}</td>
             <td><code>{{ o.order_reference }}</code></td>
             <td>{{ o.full_name }}<br><small class="text-muted">{{ o.email }}</small></td>
@@ -66,6 +68,7 @@ const statusFilter = ref('')
 const search = ref('')
 const page = ref(1)
 const pages = ref(1)
+const selected = ref([])
 let debounceTimer
 
 function debouncedLoad() {
@@ -91,9 +94,20 @@ async function updateStatus(id, status) {
   await loadOrders()
 }
 
+function toggleAll() {
+  selected.value = selected.value.length === orders.value.length ? [] : orders.value.map(o => o.order_id)
+}
+
 async function deleteOrder(id) {
   if (!confirm('Delete this order?')) return
   await api.delete(`/admin/orders/${id}`)
+  await loadOrders()
+}
+
+async function bulkDelete() {
+  if (!confirm(`Delete ${selected.value.length} orders?`)) return
+  await api.post('/admin/orders/bulk-delete', { ids: selected.value })
+  selected.value = []
   await loadOrders()
 }
 

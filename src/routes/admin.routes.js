@@ -34,6 +34,7 @@ router.get('/orders', ctrl.getOrders);
 router.get('/orders/:id', ctrl.getOrderDetail);
 router.put('/orders/:id/status', ctrl.updateOrderStatus);
 router.delete('/orders/:id', ctrl.deleteOrder);
+router.post('/orders/bulk-delete', ctrl.bulkDeleteOrders);
 
 // Payments
 router.get('/payments', ctrl.getPayments);

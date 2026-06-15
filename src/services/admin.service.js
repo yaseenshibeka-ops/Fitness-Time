@@ -238,6 +238,12 @@ class AdminService {
     return { message: 'Order deleted successfully' };
   }
 
+  static async deleteOrders(ids) {
+    if (!ids || !ids.length) throw { statusCode: 400, message: 'No IDs provided' };
+    await pool.query('DELETE FROM orders WHERE order_id IN (?)', [ids]);
+    return { message: `${ids.length} orders deleted` };
+  }
+
   // ===================== PAYMENTS =====================
 
   static async getAllPayments({ page = 1, limit = 20, search, status, payment_method } = {}) {

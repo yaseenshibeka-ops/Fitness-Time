@@ -80,6 +80,10 @@ exports.deleteOrder = async (req, res, next) => {
   try { const result = await AdminService.deleteOrder(req.params.id); res.json({ status: 'success', data: result }); }
   catch (e) { next(e); }
 };
+exports.bulkDeleteOrders = async (req, res, next) => {
+  try { const result = await AdminService.deleteOrders(req.body.ids); res.json({ status: 'success', data: result }); }
+  catch (e) { next(e); }
+};
 
 // Payments
 exports.getPayments = async (req, res, next) => {
