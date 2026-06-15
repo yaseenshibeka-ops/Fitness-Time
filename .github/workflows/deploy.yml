@@ -24,8 +24,18 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install client dependencies
+        run: npm ci
+        working-directory: client
+
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
+
+      - name: Link Vercel project
+        run: vercel link --yes --project=${{ secrets.VERCEL_PROJECT_ID }} --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Pull Vercel Environment
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
