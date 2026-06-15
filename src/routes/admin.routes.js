@@ -15,6 +15,7 @@ router.get('/users', ctrl.getUsers);
 router.get('/users/:id', ctrl.getUser);
 router.put('/users/:id', ctrl.updateUser);
 router.delete('/users/:id', ctrl.deleteUser);
+router.post('/users/bulk-delete', ctrl.bulkDeleteUsers);
 
 // Products
 router.get('/products', ctrl.getProducts);

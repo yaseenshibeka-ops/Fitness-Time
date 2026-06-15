@@ -22,6 +22,10 @@ exports.deleteUser = async (req, res, next) => {
   try { const result = await AdminService.deleteUser(req.params.id); res.json({ status: 'success', data: result }); }
   catch (e) { next(e); }
 };
+exports.bulkDeleteUsers = async (req, res, next) => {
+  try { const result = await AdminService.deleteUsers(req.body.ids); res.json({ status: 'success', data: result }); }
+  catch (e) { next(e); }
+};
 
 // Products
 exports.getProducts = async (req, res, next) => {

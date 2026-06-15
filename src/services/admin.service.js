@@ -97,6 +97,12 @@ class AdminService {
     return { message: 'User deleted successfully' };
   }
 
+  static async deleteUsers(ids) {
+    if (!ids || !ids.length) throw { statusCode: 400, message: 'No IDs provided' };
+    await pool.query('DELETE FROM users WHERE user_id = ANY(?) AND role != "admin"', [ids]);
+    return { message: `${ids.length} users deleted` };
+  }
+
   // ===================== PRODUCTS =====================
 
   static async getAllProducts({ page = 1, limit = 20, search, category_id } = {}) {

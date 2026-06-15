@@ -8,15 +8,17 @@
           <option value="user">User</option>
           <option value="admin">Admin</option>
         </select>
+        <button v-if="selected.length" class="btn btn-sm btn-outline-danger" @click="bulkDelete">Delete Selected ({{ selected.length }})</button>
       </div>
     </div>
 
     <div v-if="loading" class="text-center py-5"><div class="spinner"></div></div>
     <div v-else-if="users.length" class="glass-card p-0 overflow-hidden">
       <table class="table table-dark table-hover mb-0">
-        <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Phone</th><th>Joined</th><th></th></tr></thead>
+        <thead><tr><th><input type="checkbox" @change="toggleAll" :checked="selected.length===users.length"></th><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Phone</th><th>Joined</th><th></th></tr></thead>
         <tbody>
           <tr v-for="u in users" :key="u.user_id">
+            <td><input type="checkbox" :value="u.user_id" v-model="selected" :disabled="u.role==='admin'"></td>
             <td>{{ u.user_id }}</td>
             <td>{{ u.full_name }}</td>
             <td>{{ u.email }}</td>
@@ -74,6 +76,7 @@ const search = ref('')
 const roleFilter = ref('')
 const page = ref(1)
 const pages = ref(1)
+const selected = ref([])
 const form = ref({ full_name: '', email: '', phone: '', address: '', role: 'user' })
 const editingId = ref(null)
 let debounceTimer
@@ -107,9 +110,21 @@ async function saveUser() {
   await loadUsers()
 }
 
+function toggleAll() {
+  const selectable = users.value.filter(u => u.role !== 'admin')
+  selected.value = selected.value.length === selectable.length ? [] : selectable.map(u => u.user_id)
+}
+
 async function deleteUser(id) {
   if (!confirm('Delete this user?')) return
   await api.delete(`/admin/users/${id}`)
+  await loadUsers()
+}
+
+async function bulkDelete() {
+  if (!confirm(`Delete ${selected.value.length} users?`)) return
+  await api.post('/admin/users/bulk-delete', { ids: selected.value })
+  selected.value = []
   await loadUsers()
 }
 
