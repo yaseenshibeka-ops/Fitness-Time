@@ -120,6 +120,14 @@ exports.getSubscriptionAnalytics = async (req, res, next) => {
   try { const data = await AdminService.getSubscriptionAnalytics(); res.json({ status: 'success', data }); }
   catch (e) { next(e); }
 };
+exports.deleteSubscription = async (req, res, next) => {
+  try { const result = await AdminService.deleteSubscription(req.params.id); res.json({ status: 'success', data: result }); }
+  catch (e) { next(e); }
+};
+exports.bulkDeleteSubscriptions = async (req, res, next) => {
+  try { const result = await AdminService.deleteSubscriptions(req.body.ids); res.json({ status: 'success', data: result }); }
+  catch (e) { next(e); }
+};
 
 // Fitness
 exports.getFitnessRecords = async (req, res, next) => {

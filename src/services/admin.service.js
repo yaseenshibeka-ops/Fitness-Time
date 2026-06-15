@@ -356,6 +356,19 @@ class AdminService {
     return { message: `Subscription ${status} successfully` };
   }
 
+  static async deleteSubscription(subscriptionId) {
+    const [subs] = await pool.query('SELECT * FROM subscriptions WHERE subscription_id=?', [subscriptionId]);
+    if (!subs.length) throw { statusCode: 404, message: 'Subscription not found' };
+    await pool.query('DELETE FROM subscriptions WHERE subscription_id=?', [subscriptionId]);
+    return { message: 'Subscription deleted successfully' };
+  }
+
+  static async deleteSubscriptions(ids) {
+    if (!ids || !ids.length) throw { statusCode: 400, message: 'No IDs provided' };
+    await pool.query('DELETE FROM subscriptions WHERE subscription_id = ANY(?)', [ids]);
+    return { message: `${ids.length} subscriptions deleted` };
+  }
+
   static async getSubscriptionAnalytics() {
     const [byPlan] = await pool.query('SELECT plan_type, COUNT(*) as count, COALESCE(SUM(price),0) as revenue FROM subscriptions WHERE status="active" GROUP BY plan_type');
     const [[expiringSoon]] = await pool.query('SELECT COUNT(*) as count FROM subscriptions WHERE status="active" AND end_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)');

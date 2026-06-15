@@ -47,6 +47,8 @@ router.get('/subscriptions', ctrl.getSubscriptions);
 router.get('/subscriptions/analytics', ctrl.getSubscriptionAnalytics);
 router.put('/subscriptions/:id/status', ctrl.updateSubscriptionStatus);
 router.put('/subscriptions/:id/cancel', ctrl.cancelSubscription);
+router.delete('/subscriptions/:id', ctrl.deleteSubscription);
+router.post('/subscriptions/bulk-delete', ctrl.bulkDeleteSubscriptions);
 
 // Fitness
 router.get('/fitness', ctrl.getFitnessRecords);
