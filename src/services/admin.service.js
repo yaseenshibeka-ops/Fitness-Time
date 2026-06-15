@@ -148,7 +148,7 @@ class AdminService {
 
   static async bulkDeleteProducts(ids) {
     if (!ids || !ids.length) throw { statusCode: 400, message: 'No IDs provided' };
-    await pool.query('UPDATE products SET is_active=FALSE WHERE product_id IN (?)', [ids]);
+    await pool.query('UPDATE products SET is_active=FALSE WHERE product_id = ANY(?)', [ids]);
     return { message: `${ids.length} products deactivated` };
   }
 
@@ -240,7 +240,7 @@ class AdminService {
 
   static async deleteOrders(ids) {
     if (!ids || !ids.length) throw { statusCode: 400, message: 'No IDs provided' };
-    await pool.query('DELETE FROM orders WHERE order_id IN (?)', [ids]);
+    await pool.query('DELETE FROM orders WHERE order_id = ANY(?)', [ids]);
     return { message: `${ids.length} orders deleted` };
   }
 
