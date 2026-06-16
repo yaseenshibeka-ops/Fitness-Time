@@ -11,7 +11,7 @@
     </div>
     <div v-if="loading" class="text-center py-5"><div class="spinner"></div></div>
     <div v-else-if="subscriptions.length" class="glass-card p-0 overflow-hidden">
-      <table class="table table-dark table-hover mb-0">
+      <table class="table table-hover mb-0">
         <thead><tr><th><input type="checkbox" @change="toggleAll" :checked="selected.length===subscriptions.length"></th><th>User</th><th>Plan</th><th>Price</th><th>Status</th><th>Start</th><th>End</th><th></th></tr></thead>
         <tbody>
           <tr v-for="s in subscriptions" :key="s.subscription_id">
@@ -19,7 +19,14 @@
             <td>{{ s.full_name }}<br><small class="text-muted">{{ s.email }}</small></td>
             <td><span class="badge bg-accent text-dark">{{ s.plan_name || s.plan }}</span></td>
             <td>{{ Number(s.price).toLocaleString() }} RWF</td>
-            <td><span class="badge" :class="s.status==='active'?'bg-success':s.status==='expired'?'bg-danger':'bg-secondary'">{{ s.status }}</span></td>
+            <td>
+              <select class="form-select form-select-sm status-select" :value="s.status" @change="changeStatus(s.subscription_id, $event.target.value)">
+                <option value="active">Active</option>
+                <option value="expired">Expired</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="pending">Pending</option>
+              </select>
+            </td>
             <td>{{ new Date(s.start_date).toLocaleDateString() }}</td>
             <td>{{ new Date(s.end_date).toLocaleDateString() }}</td>
             <td>
@@ -31,9 +38,9 @@
       </table>
       <div v-if="pages>1" class="d-flex justify-content-center p-3">
         <nav><ul class="pagination pagination-sm mb-0">
-          <li class="page-item" :class="{disabled:page<=1}"><button class="page-link bg-dark text-light border-secondary" @click="page--;loadSubs()">Prev</button></li>
-          <li class="page-item disabled"><span class="page-link bg-dark text-light border-secondary">{{ page }}/{{ pages }}</span></li>
-          <li class="page-item" :class="{disabled:page>=pages}"><button class="page-link bg-dark text-light border-secondary" @click="page++;loadSubs()">Next</button></li>
+          <li class="page-item" :class="{disabled:page<=1}"><button class="page-link" @click="page--;loadSubs()">Prev</button></li>
+          <li class="page-item disabled"><span class="page-link">{{ page }}/{{ pages }}</span></li>
+          <li class="page-item" :class="{disabled:page>=pages}"><button class="page-link" @click="page++;loadSubs()">Next</button></li>
         </ul></nav>
       </div>
     </div>
@@ -68,6 +75,11 @@ function toggleAll() {
   selected.value = selected.value.length === subscriptions.value.length ? [] : subscriptions.value.map(s => s.subscription_id)
 }
 
+async function changeStatus(id, status) {
+  await api.put(`/admin/subscriptions/${id}/status`, { status })
+  await loadSubs()
+}
+
 async function cancelSub(id) {
   if (!confirm('Cancel this subscription?')) return
   await api.put(`/admin/subscriptions/${id}/cancel`)
@@ -89,3 +101,24 @@ async function bulkDelete() {
 
 onMounted(loadSubs)
 </script>
+
+<style scoped>
+.status-select {
+  background: transparent;
+  color: var(--text-light);
+  border-color: var(--glass-border);
+  font-size: 0.8rem;
+  padding: 0.2rem 0.4rem;
+  width: 110px;
+}
+.status-select:focus {
+  border-color: var(--accent);
+  box-shadow: none;
+}
+.status-select option { background: var(--surface); color: var(--text-light); }
+.table { color: var(--text-light); --bs-table-bg: transparent; --bs-table-color: var(--text-light); border-color: var(--glass-border); margin-bottom: 0; }
+.table td, .table th { border-color: var(--glass-border); vertical-align: middle; }
+.page-link { background: transparent; color: var(--text-light); border-color: var(--glass-border); }
+.page-link:hover { background: var(--glass); color: var(--accent); border-color: var(--accent); }
+.page-item.disabled .page-link { background: transparent; color: var(--text-muted); border-color: var(--glass-border); }
+</style>

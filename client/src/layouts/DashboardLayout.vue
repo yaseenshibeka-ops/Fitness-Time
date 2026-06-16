@@ -7,10 +7,10 @@
       <div class="p-3 border-bottom text-center" style="border-color:var(--glass-border)!important;">
         <div v-if="!collapsed || mobileOpen">
           <div style="width:40px;height:40px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 4px;font-weight:800;">{{ auth.fullName.charAt(0) }}</div>
-          <div class="small fw-bold text-light">{{ auth.fullName }}</div>
+          <div class="small fw-bold">{{ auth.fullName }}</div>
           <span class="badge bg-accent text-dark" style="font-size:0.6rem;">{{ auth.user?.role }}</span>
         </div>
-        <button class="btn btn-sm btn-outline-light d-none d-md-inline-block mt-2" @click="collapsed = !collapsed" style="font-size:0.8rem;"><i class="bi bi-list"></i></button>
+        <button class="btn btn-sm btn-outline-primary d-none d-md-inline-block mt-2" @click="collapsed = !collapsed" style="font-size:0.8rem;"><i class="bi bi-list"></i></button>
       </div>
       <nav class="nav flex-column p-2">
         <router-link v-for="item in menu" :key="item.path" :to="item.path"
@@ -25,16 +25,16 @@
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
           <!-- Mobile menu toggle button -->
-          <button class="btn btn-outline-light d-md-none px-2 py-1" @click="mobileOpen = !mobileOpen" aria-label="Toggle Navigation">
+          <button class="btn btn-outline-primary d-md-none px-2 py-1" @click="mobileOpen = !mobileOpen" aria-label="Toggle Navigation">
             <i class="bi bi-list" style="font-size: 1.25rem; line-height: 1;"></i>
           </button>
           <div>
-            <h4 class="fw-bold mb-0 text-light">{{ pageTitle }}</h4>
+            <h4 class="fw-bold mb-0">{{ pageTitle }}</h4>
             <small class="text-muted">{{ greeting }}, {{ auth.fullName }}</small>
           </div>
         </div>
         <div class="d-flex align-items-center gap-3">
-          <router-link to="/dashboard/notifications" class="position-relative text-light animate-bell" style="font-size:1.2rem;">
+          <router-link to="/dashboard/notifications" class="position-relative animate-bell" style="font-size:1.2rem;">
             <i class="bi bi-bell"></i>
             <span v-if="notifStore.unreadCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger animate-pulse" style="font-size:0.55rem;">{{ notifStore.unreadCount }}</span>
           </router-link>
@@ -91,7 +91,7 @@ watch(() => route.path, () => {
 .dashboard-sidebar {
   width: 220px;
   background: var(--surface);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  border-right: 1px solid var(--glass-border);
   transition: width 0.3s, transform 0.3s ease-in-out;
   flex-shrink: 0;
   overflow-y: auto;
@@ -106,7 +106,7 @@ watch(() => route.path, () => {
   transition: color 0.15s, background 0.15s;
 }
 .dashboard-sidebar .nav-link:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface-variant);
   color: var(--text-light);
 }
 .dashboard-sidebar .nav-link.active {

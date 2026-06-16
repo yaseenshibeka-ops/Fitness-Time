@@ -13,14 +13,14 @@
                 <span class="badge bg-success">{{ subscription.status }}</span>
               </div>
             </div>
-            <table class="table table-dark table-sm">
+            <table class="table table-sm">
               <tr><td>Price</td><td class="fw-bold">{{ Number(subscription.price).toLocaleString() }} RWF</td></tr>
               <tr><td>Start Date</td><td>{{ new Date(subscription.start_date).toLocaleDateString() }}</td></tr>
               <tr><td>End Date</td><td>{{ new Date(subscription.end_date).toLocaleDateString() }}</td></tr>
               <tr><td>Remaining Days</td><td class="fw-bold text-accent">{{ remainingDays }} days</td></tr>
             </table>
             <div class="d-flex gap-2 mt-3">
-              <button class="btn btn-outline-light" @click="cancelSub" :disabled="submitting">Cancel Subscription</button>
+              <button class="btn btn-outline-primary" @click="cancelSub" :disabled="submitting">Cancel Subscription</button>
               <router-link to="/subscriptions" class="btn btn-primary">Upgrade</router-link>
             </div>
           </div>
@@ -45,11 +45,11 @@
           <div v-for="plan in plans" :key="plan.name" class="col-md-4">
             <div class="glass-card p-4 text-center h-100" :class="plan.recommended ? 'border-accent' : ''">
               <h5 class="fw-bold">{{ plan.name }}</h5>
-              <div class="display-6 fw-bold text-light my-3">{{ plan.price.toLocaleString() }} <small class="fs-6 text-muted">RWF</small></div>
+              <div class="display-6 fw-bold my-3">{{ plan.price.toLocaleString() }} <small class="fs-6 text-muted">RWF</small></div>
               <ul class="list-unstyled text-start mb-3">
                 <li v-for="f in plan.features" :key="f" class="mb-1 small"><i class="bi bi-check-circle-fill text-success me-1"></i>{{ f }}</li>
               </ul>
-              <router-link :to="`/checkout/subscription/${plan.slug}`" class="btn w-100" :class="plan.recommended ? 'btn-primary' : 'btn-outline-light'">{{ plan.name === 'Premium' ? 'Upgrade' : 'Subscribe' }}</router-link>
+              <router-link :to="`/checkout/subscription/${plan.slug}`" class="btn w-100" :class="plan.recommended ? 'btn-primary' : 'btn-outline-primary'">{{ plan.name === 'Premium' ? 'Upgrade' : 'Subscribe' }}</router-link>
             </div>
           </div>
         </div>
@@ -101,3 +101,8 @@ async function cancelSub() {
 
 onMounted(fetchSub)
 </script>
+
+<style scoped>
+.table { color: var(--text-light); --bs-table-bg: transparent; --bs-table-color: var(--text-light); border-color: var(--glass-border); }
+.table td { border-color: var(--glass-border); padding: 0.75rem 0; }
+</style>
