@@ -46,6 +46,7 @@
                 <span class="d-none d-lg-inline">{{ auth.fullName?.split(' ')[0] || 'User' }}</span>
               </a>
               <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item" href="#" @click.prevent="go('/chat')"><i class="bi bi-robot me-2"></i>AI Assistant</a></li>
                 <li><a class="dropdown-item" href="#" @click.prevent="go('/dashboard')"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
                 <li><a class="dropdown-item" href="#" @click.prevent="go('/dashboard/profile')"><i class="bi bi-person me-2"></i>Profile</a></li>
                 <li><a class="dropdown-item" href="#" @click.prevent="go('/dashboard/orders')"><i class="bi bi-cart-check me-2"></i>Orders</a></li>

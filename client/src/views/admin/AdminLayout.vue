@@ -51,6 +51,7 @@ const menuItems = [
   { path: '/admin/payments', label: 'Payments', icon: 'bi bi-credit-card' },
   { path: '/admin/subscriptions', label: 'Subscriptions', icon: 'bi bi-star' },
   { path: '/admin/fitness', label: 'Fitness', icon: 'bi bi-activity' },
+  { path: '/admin/ai-assistant', label: 'AI Assistant', icon: 'bi bi-robot' },
   { path: '/admin/reports', label: 'Reports', icon: 'bi bi-file-earmark-bar-graph' },
   { path: '/admin/settings', label: 'Settings', icon: 'bi bi-gear' },
 ]

@@ -177,6 +177,15 @@ exports.changePassword = async (req, res, next) => {
   } catch (e) { next(e); }
 };
 
+// AI Chat Assistant
+exports.getAiStats = async (req, res, next) => {
+  try {
+    const ChatService = require('../services/chat.service');
+    const stats = await ChatService.getAdminStats();
+    res.json({ status: 'success', data: { stats } });
+  } catch (e) { next(e); }
+};
+
 // Reports
 exports.getSalesReport = async (req, res, next) => {
   try { const data = await AdminService.getSalesReport(req.query); res.json({ status: 'success', data }); }

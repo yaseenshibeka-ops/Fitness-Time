@@ -78,7 +78,10 @@ async function migrate() {
             { table: 'fitness_goals', key: 'goal_id' },
             { table: 'workout_history', key: 'workout_id' },
             { table: 'user_notifications', key: 'notification_id' },
-            { table: 'notifications', key: 'notification_id' }
+            { table: 'notifications', key: 'notification_id' },
+            { table: 'chat_messages', key: 'message_id' },
+            { table: 'ai_recommendations', key: 'recommendation_id' },
+            { table: 'ai_usage_log', key: 'log_id' }
         ];
 
         for (const { table, key } of tablesToSync) {

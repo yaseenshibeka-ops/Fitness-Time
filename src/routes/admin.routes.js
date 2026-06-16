@@ -9,6 +9,7 @@ router.use(authenticate, authorizeAdmin);
 
 // Dashboard
 router.get('/stats', ctrl.getStats);
+router.get('/ai-stats', ctrl.getAiStats);
 
 // Users
 router.get('/users', ctrl.getUsers);

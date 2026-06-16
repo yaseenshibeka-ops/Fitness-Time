@@ -57,6 +57,8 @@ const subscriptionRoutes = require('./routes/subscription.routes');
 const fitnessRoutes = require('./routes/fitness.routes');
 const adminRoutes = require('./routes/admin.routes');
 const userRoutes = require('./routes/user.routes');
+const chatRoutes = require('./routes/chat.routes');
+const recommendationRoutes = require('./routes/recommendation.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
@@ -67,6 +69,8 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/fitness', fitnessRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/recommendations', recommendationRoutes);
 
 // Temporary default route for API
 app.get('/api/health', (req, res) => {

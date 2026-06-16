@@ -13,6 +13,7 @@ const routes = [
   { path: '/subscriptions', name: 'Subscriptions', component: () => import('../views/Subscriptions.vue') },
   { path: '/about', name: 'About', component: () => import('../views/About.vue') },
   { path: '/contact', name: 'Contact', component: () => import('../views/Contact.vue') },
+  { path: '/chat', name: 'Chat', component: () => import('../views/ChatPage.vue'), meta: { requiresAuth: true } },
 
   // Old standalone user pages (redirect /orders, /fitness, /profile to dashboard)
   { path: '/orders', redirect: '/dashboard/orders' },
@@ -55,6 +56,7 @@ const routes = [
       { path: 'payments', name: 'AdminPayments', component: () => import('../views/admin/Payments.vue') },
       { path: 'subscriptions', name: 'AdminSubscriptions', component: () => import('../views/admin/Subscriptions.vue') },
       { path: 'fitness', name: 'AdminFitness', component: () => import('../views/admin/FitnessManagement.vue') },
+      { path: 'ai-assistant', name: 'AdminAiAssistant', component: () => import('../views/admin/AiAssistant.vue') },
       { path: 'reports', name: 'AdminReports', component: () => import('../views/admin/Reports.vue') },
       { path: 'notifications', name: 'AdminNotifications', component: () => import('../views/admin/Notifications.vue') },
       { path: 'settings', name: 'AdminSettings', component: () => import('../views/admin/Settings.vue') },

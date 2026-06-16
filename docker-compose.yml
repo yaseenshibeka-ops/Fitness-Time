@@ -13,6 +13,10 @@ services:
       - DB_PORT=5432
       - JWT_SECRET=dev_secret_key_123
       - JWT_EXPIRES_IN=24h
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=gpt-3.5-turbo
+      - OPENAI_MAX_TOKENS=300
+      - OPENAI_TEMPERATURE=0.7
       - NODE_ENV=development
     volumes:
       - ./src:/app/src
