@@ -14,7 +14,7 @@
 
     <div v-if="loading" class="text-center py-5"><div class="spinner"></div></div>
     <div v-else-if="users.length" class="glass-card p-0 overflow-hidden">
-      <table class="table table-dark table-hover mb-0">
+      <table class="table table-hover mb-0">
         <thead><tr><th><input type="checkbox" @change="toggleAll" :checked="selected.length===users.length"></th><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Phone</th><th>Joined</th><th></th></tr></thead>
         <tbody>
           <tr v-for="u in users" :key="u.user_id">
@@ -26,7 +26,7 @@
             <td>{{ u.phone || '-' }}</td>
             <td>{{ new Date(u.created_at).toLocaleDateString() }}</td>
             <td>
-              <button class="btn btn-sm btn-outline-light me-1" @click="editUser(u)" data-bs-toggle="modal" data-bs-target="#userModal"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-sm btn-outline-primary me-1" @click="editUser(u)" data-bs-toggle="modal" data-bs-target="#userModal"><i class="bi bi-pencil"></i></button>
               <button v-if="u.role!=='admin'" class="btn btn-sm btn-outline-danger" @click="deleteUser(u.user_id)"><i class="bi bi-trash"></i></button>
             </td>
           </tr>
@@ -34,9 +34,9 @@
       </table>
       <div v-if="pages > 1" class="d-flex justify-content-center p-3">
         <nav><ul class="pagination pagination-sm mb-0">
-          <li class="page-item" :class="{disabled:page<=1}"><button class="page-link bg-dark text-light border-secondary" @click="page--;loadUsers()">Prev</button></li>
-          <li class="page-item disabled"><span class="page-link bg-dark text-light border-secondary">{{ page }}/{{ pages }}</span></li>
-          <li class="page-item" :class="{disabled:page>=pages}"><button class="page-link bg-dark text-light border-secondary" @click="page++;loadUsers()">Next</button></li>
+          <li class="page-item" :class="{disabled:page<=1}"><button class="page-link" @click="page--;loadUsers()">Prev</button></li>
+          <li class="page-item disabled"><span class="page-link">{{ page }}/{{ pages }}</span></li>
+          <li class="page-item" :class="{disabled:page>=pages}"><button class="page-link" @click="page++;loadUsers()">Next</button></li>
         </ul></nav>
       </div>
     </div>
@@ -58,7 +58,7 @@
           </div>
         </div>
         <div class="modal-footer border-0">
-          <button class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
           <button class="btn btn-primary" @click="saveUser">Save</button>
         </div>
       </div></div>

@@ -18,11 +18,11 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold mb-0">{{ pageTitle }}</h4>
         <div class="d-flex align-items-center gap-3">
-          <router-link to="/admin/notifications" class="position-relative text-light" style="font-size: 1.2rem;">
+          <router-link to="/admin/notifications" class="position-relative" style="font-size: 1.2rem;">
             <i class="bi bi-bell"></i>
             <span v-if="unreadCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">{{ unreadCount }}</span>
           </router-link>
-          <button class="btn btn-sm btn-outline-light" @click="toggleSidebar">
+          <button class="btn btn-sm btn-outline-primary" @click="toggleSidebar">
             <i class="bi bi-list"></i>
           </button>
         </div>

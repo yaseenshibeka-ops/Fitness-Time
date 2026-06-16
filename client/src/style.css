@@ -281,3 +281,12 @@ html.light .bg-section-card {
   border: 1px solid rgba(15, 23, 42, 0.08) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
+
+/* Theme-aware tables */
+.table { --bs-table-color: var(--text-light); --bs-table-bg: transparent; border-color: var(--glass-border); }
+.table td, .table th { border-color: var(--glass-border); }
+
+/* Theme-aware pagination */
+.page-link { background: transparent; color: var(--text-light); border-color: var(--glass-border); }
+.page-link:hover { background: var(--glass); color: var(--accent); border-color: var(--accent); }
+.page-item.disabled .page-link { background: transparent; color: var(--text-muted); border-color: var(--glass-border); }

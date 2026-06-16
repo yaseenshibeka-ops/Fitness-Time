@@ -18,7 +18,7 @@
 
     <div v-if="loading" class="text-center py-5"><div class="spinner"></div></div>
     <div v-else-if="orders.length" class="glass-card p-0 overflow-hidden">
-      <table class="table table-dark table-hover mb-0">
+      <table class="table table-hover mb-0">
         <thead><tr><th><input type="checkbox" @change="toggleAll" :checked="selected.length===orders.length"></th><th>#</th><th>Reference</th><th>Customer</th><th>Total</th><th>Status</th><th>Payment</th><th>Date</th><th></th></tr></thead>
         <tbody>
           <tr v-for="o in orders" :key="o.order_id">
@@ -40,7 +40,7 @@
             <td><span class="badge" :class="o.payment_status === 'paid' ? 'bg-success' : 'bg-warning text-dark'">{{ o.payment_status || 'unpaid' }}</span></td>
             <td>{{ new Date(o.created_at).toLocaleDateString() }}</td>
             <td>
-              <router-link :to="`/admin/orders/${o.order_id}`" class="btn btn-sm btn-outline-light"><i class="bi bi-eye"></i></router-link>
+              <router-link :to="`/admin/orders/${o.order_id}`" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></router-link>
               <button class="btn btn-sm btn-outline-danger ms-1" @click="deleteOrder(o.order_id)"><i class="bi bi-trash"></i></button>
             </td>
           </tr>
@@ -48,9 +48,9 @@
       </table>
       <div v-if="pages > 1" class="d-flex justify-content-center p-3">
         <nav><ul class="pagination pagination-sm mb-0">
-          <li class="page-item" :class="{disabled:page<=1}"><button class="page-link bg-dark text-light border-secondary" @click="page--;loadOrders()">Prev</button></li>
-          <li class="page-item disabled"><span class="page-link bg-dark text-light border-secondary">{{ page }}/{{ pages }}</span></li>
-          <li class="page-item" :class="{disabled:page>=pages}"><button class="page-link bg-dark text-light border-secondary" @click="page++;loadOrders()">Next</button></li>
+          <li class="page-item" :class="{disabled:page<=1}"><button class="page-link" @click="page--;loadOrders()">Prev</button></li>
+          <li class="page-item disabled"><span class="page-link">{{ page }}/{{ pages }}</span></li>
+          <li class="page-item" :class="{disabled:page>=pages}"><button class="page-link" @click="page++;loadOrders()">Next</button></li>
         </ul></nav>
       </div>
     </div>

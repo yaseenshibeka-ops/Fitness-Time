@@ -23,15 +23,15 @@
           <small class="text-muted">{{ new Date(n.created_at).toLocaleString() }}</small>
         </div>
         <div class="d-flex gap-1">
-          <button v-if="!n.is_read" class="btn btn-sm btn-outline-light" @click="markRead(n.notification_id)" title="Mark read"><i class="bi bi-check"></i></button>
+          <button v-if="!n.is_read" class="btn btn-sm btn-outline-primary" @click="markRead(n.notification_id)" title="Mark read"><i class="bi bi-check"></i></button>
           <button class="btn btn-sm btn-outline-danger" @click="deleteNotif(n.notification_id)"><i class="bi bi-x"></i></button>
         </div>
       </div>
       <div v-if="pages>1" class="d-flex justify-content-center p-3">
         <nav><ul class="pagination pagination-sm mb-0">
-          <li class="page-item" :class="{disabled:page<=1}"><button class="page-link bg-dark text-light border-secondary" @click="page--;loadNotifications()">Prev</button></li>
-          <li class="page-item disabled"><span class="page-link bg-dark text-light border-secondary">{{ page }}/{{ pages }}</span></li>
-          <li class="page-item" :class="{disabled:page>=pages}"><button class="page-link bg-dark text-light border-secondary" @click="page++;loadNotifications()">Next</button></li>
+          <li class="page-item" :class="{disabled:page<=1}"><button class="page-link" @click="page--;loadNotifications()">Prev</button></li>
+          <li class="page-item disabled"><span class="page-link">{{ page }}/{{ pages }}</span></li>
+          <li class="page-item" :class="{disabled:page>=pages}"><button class="page-link" @click="page++;loadNotifications()">Next</button></li>
         </ul></nav>
       </div>
     </div>

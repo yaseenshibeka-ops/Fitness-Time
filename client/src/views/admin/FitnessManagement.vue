@@ -8,7 +8,7 @@
     </div>
     <div v-if="loading" class="text-center py-5"><div class="spinner"></div></div>
     <div v-else-if="records.length" class="glass-card p-0 overflow-hidden">
-      <table class="table table-dark table-hover mb-0">
+      <table class="table table-hover mb-0">
         <thead><tr><th>User</th><th>Type</th><th>Data</th><th>Date</th><th></th></tr></thead>
         <tbody>
           <tr v-for="r in records" :key="r.record_id">
@@ -24,9 +24,9 @@
       </table>
       <div v-if="pages>1" class="d-flex justify-content-center p-3">
         <nav><ul class="pagination pagination-sm mb-0">
-          <li class="page-item" :class="{disabled:page<=1}"><button class="page-link bg-dark text-light border-secondary" @click="page--;loadFitness()">Prev</button></li>
-          <li class="page-item disabled"><span class="page-link bg-dark text-light border-secondary">{{ page }}/{{ pages }}</span></li>
-          <li class="page-item" :class="{disabled:page>=pages}"><button class="page-link bg-dark text-light border-secondary" @click="page++;loadFitness()">Next</button></li>
+          <li class="page-item" :class="{disabled:page<=1}"><button class="page-link" @click="page--;loadFitness()">Prev</button></li>
+          <li class="page-item disabled"><span class="page-link">{{ page }}/{{ pages }}</span></li>
+          <li class="page-item" :class="{disabled:page>=pages}"><button class="page-link" @click="page++;loadFitness()">Next</button></li>
         </ul></nav>
       </div>
     </div>

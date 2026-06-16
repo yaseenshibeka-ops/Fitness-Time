@@ -10,7 +10,7 @@
       <input type="date" class="form-control form-control-sm" v-model="dateFrom" style="width:160px;">
       <input type="date" class="form-control form-control-sm" v-model="dateTo" style="width:160px;">
       <button class="btn btn-primary btn-sm" @click="generateReport">Generate</button>
-      <button class="btn btn-outline-light btn-sm" @click="exportCSV">Export CSV</button>
+      <button class="btn btn-outline-primary btn-sm" @click="exportCSV">Export CSV</button>
     </div>
 
     <div v-if="loading" class="text-center py-5"><div class="spinner"></div></div>
@@ -27,7 +27,7 @@
       <div class="glass-card p-3">
         <h6 class="fw-bold mb-3">Report Data</h6>
         <div v-if="report.length" class="table-responsive">
-          <table class="table table-dark table-sm mb-0">
+          <table class="table table-sm mb-0">
             <thead><tr><th v-for="h in headers" :key="h">{{ h }}</th></tr></thead>
             <tbody>
               <tr v-for="(row, i) in report" :key="i">

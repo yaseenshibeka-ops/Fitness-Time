@@ -1,12 +1,12 @@
 <template>
   <div>
-    <router-link to="/admin/orders" class="btn btn-sm btn-outline-light mb-3"><i class="bi bi-arrow-left"></i> Back to Orders</router-link>
+    <router-link to="/admin/orders" class="btn btn-sm btn-outline-primary mb-3"><i class="bi bi-arrow-left"></i> Back to Orders</router-link>
     <div v-if="loading" class="text-center py-5"><div class="spinner"></div></div>
     <div v-else-if="order" class="row g-3">
       <div class="col-md-6">
         <div class="glass-card p-3">
           <h6 class="fw-bold mb-3">Order #{{ order.order_reference }}</h6>
-          <table class="table table-dark table-sm">
+          <table class="table table-sm">
             <tr><td>Status</td><td>
               <select class="form-select form-select-sm" :value="order.status" @change="e => updateStatus(e.target.value)">
                 <option v-for="s in ['pending','confirmed','processing','shipped','delivered','cancelled']" :key="s" :value="s">{{ s }}</option>
@@ -24,7 +24,7 @@
       <div class="col-md-6">
         <div class="glass-card p-3">
           <h6 class="fw-bold mb-3">Items</h6>
-          <table class="table table-dark table-sm mb-0">
+          <table class="table table-sm mb-0">
             <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
             <tbody>
               <tr v-for="item in items" :key="item.item_id">

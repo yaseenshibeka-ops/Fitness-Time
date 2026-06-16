@@ -9,7 +9,7 @@
 
     <div v-if="loading" class="text-center py-5"><div class="spinner"></div></div>
     <div v-else-if="categories.length" class="glass-card p-0 overflow-hidden">
-      <table class="table table-dark table-hover mb-0">
+      <table class="table table-hover mb-0">
         <thead><tr><th>#</th><th>Name</th><th>Slug</th><th>Products</th><th>Active</th><th></th></tr></thead>
         <tbody>
           <tr v-for="c in categories" :key="c.category_id">
@@ -19,7 +19,7 @@
             <td>{{ c.product_count || 0 }}</td>
             <td><span class="badge" :class="c.is_active ? 'bg-success' : 'bg-secondary'">{{ c.is_active ? 'Yes' : 'No' }}</span></td>
             <td>
-              <button class="btn btn-sm btn-outline-light me-1" @click="editCat(c)" data-bs-toggle="modal" data-bs-target="#catModal"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-sm btn-outline-primary me-1" @click="editCat(c)" data-bs-toggle="modal" data-bs-target="#catModal"><i class="bi bi-pencil"></i></button>
               <button class="btn btn-sm btn-outline-danger" @click="deleteCat(c.category_id)"><i class="bi bi-trash"></i></button>
             </td>
           </tr>
@@ -37,7 +37,7 @@
           <div class="mb-3"><textarea class="form-control" v-model="form.description" placeholder="Description" rows="2"></textarea></div>
         </div>
         <div class="modal-footer border-0">
-          <button class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
           <button class="btn btn-primary" @click="saveCat">{{ editingId ? 'Update' : 'Create' }}</button>
         </div>
       </div></div>
