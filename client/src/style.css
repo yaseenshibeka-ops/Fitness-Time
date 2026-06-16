@@ -74,6 +74,24 @@ html.light .search-overlay {
 html.light .navbar-toggler-icon {
   filter: invert(1);
 }
+html.light .text-light { color: var(--text-light) !important; }
+html.light .btn-outline-light {
+  color: var(--text-muted) !important;
+  border-color: var(--glass-border) !important;
+}
+html.light .btn-outline-light:hover {
+  background: var(--surface-variant) !important;
+  color: var(--text-light) !important;
+}
+html.light .table-dark {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--text-light);
+  --bs-table-border-color: var(--glass-border);
+  --bs-table-hover-bg: var(--surface-variant);
+  --bs-table-striped-bg: var(--surface-variant);
+}
+html.light .bg-dark { background: var(--surface) !important; }
+html.light .text-white:not(.bg-primary):not(.bg-red-600):not(.bg-danger) { color: var(--text-light) !important; }
 
 * { box-sizing: border-box; }
 

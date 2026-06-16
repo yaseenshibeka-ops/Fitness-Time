@@ -1,5 +1,5 @@
 <template>
-  <footer class="pt-5 pb-4" style="background:#0A1628;border-top:1px solid var(--glass-border);">
+  <footer class="pt-5 pb-4" style="background:var(--surface);border-top:1px solid var(--glass-border);">
     <div class="container">
       <div class="row g-4">
         <div class="col-lg-4">

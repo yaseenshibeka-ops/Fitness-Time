@@ -99,21 +99,21 @@ onMounted(async () => {
       new Chart(salesChart.value, {
         type: 'line',
         data: { labels: s.monthlySales.map(m => m.month), datasets: [{ label: 'Revenue', data: s.monthlySales.map(m => m.total), borderColor: '#00B4D8', tension: 0.3, fill: false }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#ADB5BD' } }, y: { ticks: { color: '#ADB5BD' } } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() } }, y: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() } } } }
       })
     }
     if (s.orderChart?.length) {
       new Chart(ordersChart.value, {
         type: 'bar',
         data: { labels: s.orderChart.map(m => m.month), datasets: [{ label: 'Orders', data: s.orderChart.map(m => m.total), backgroundColor: '#0066FF' }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#ADB5BD' } }, y: { ticks: { color: '#ADB5BD' } } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() } }, y: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() } } } }
       })
     }
     if (s.subscriptionChart?.length) {
       new Chart(subChart.value, {
         type: 'line',
         data: { labels: s.subscriptionChart.map(m => m.month), datasets: [{ label: 'Subscriptions', data: s.subscriptionChart.map(m => m.total), borderColor: '#00C853', tension: 0.3, fill: false }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#ADB5BD' } }, y: { ticks: { color: '#ADB5BD' } } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() } }, y: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() } } } }
       })
     }
   } catch (e) { console.error(e) }

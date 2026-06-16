@@ -98,7 +98,7 @@ async function generate() {
         chartInstance = new Chart(reportChart.value, {
           type: 'line',
           data: { labels, datasets: [{ label, data: values, borderColor: color, tension: 0.3, fill: false }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#ADB5BD' } }, y: { ticks: { color: '#ADB5BD' } } } }
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() } }, y: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() } } } }
         })
       }
     }
