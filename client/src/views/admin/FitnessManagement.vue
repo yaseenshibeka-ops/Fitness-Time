@@ -3,21 +3,22 @@
     <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
       <input type="search" class="form-control form-control-sm" placeholder="Search user..." v-model="search" @input="debouncedLoad" style="width:200px;">
       <select class="form-select form-select-sm" v-model="typeFilter" @change="loadFitness" style="width:160px;">
-        <option value="">All Types</option><option value="workout">Workout</option><option value="nutrition">Nutrition</option><option value="measurement">Measurement</option>
+        <option value="">All Types</option><option value="Strength">Strength</option><option value="Cardio">Cardio</option><option value="HIIT">HIIT</option><option value="Yoga">Yoga</option>
       </select>
     </div>
     <div v-if="loading" class="text-center py-5"><div class="spinner"></div></div>
     <div v-else-if="records.length" class="glass-card p-0 overflow-hidden">
       <table class="table table-hover mb-0">
-        <thead><tr><th>User</th><th>Type</th><th>Data</th><th>Date</th><th></th></tr></thead>
+        <thead><tr><th>User</th><th>Workout</th><th>Duration</th><th>Calories</th><th>Date</th><th></th></tr></thead>
         <tbody>
-          <tr v-for="r in records" :key="r.record_id">
+          <tr v-for="r in records" :key="r.progress_id">
             <td>{{ r.full_name }}</td>
-            <td><span class="badge bg-accent text-dark">{{ r.record_type }}</span></td>
-            <td><small>{{ JSON.stringify(r.record_data).substring(0,60) }}</small></td>
-            <td>{{ new Date(r.created_at).toLocaleDateString() }}</td>
+            <td><span class="badge bg-accent text-dark">{{ r.workout_type || '-' }}</span></td>
+            <td>{{ r.duration_minutes || '-' }} min</td>
+            <td>{{ r.calories_burned || '-' }}</td>
+            <td>{{ new Date(r.recorded_date || r.created_at).toLocaleDateString() }}</td>
             <td>
-              <button class="btn btn-sm btn-outline-danger" @click="deleteRecord(r.record_id)"><i class="bi bi-trash"></i></button>
+              <button class="btn btn-sm btn-outline-danger" @click="deleteRecord(r.progress_id)"><i class="bi bi-trash"></i></button>
             </td>
           </tr>
         </tbody>

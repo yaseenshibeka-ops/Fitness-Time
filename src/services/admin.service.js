@@ -385,7 +385,7 @@ class AdminService {
 
     if (user_id) { where.push('f.user_id = ?'); params.push(user_id); }
     if (search) { where.push('u.full_name LIKE ?'); params.push(`%${search}%`); }
-    if (record_type) { where.push('f.record_type = ?'); params.push(record_type); }
+    if (record_type) { where.push('f.workout_type = ?'); params.push(record_type); }
     if (from) { where.push('f.recorded_date >= ?'); params.push(from); }
     if (to) { where.push('f.recorded_date <= ?'); params.push(to); }
 
@@ -402,13 +402,13 @@ class AdminService {
   static async getFitnessReport(month, year) {
     const [records] = await pool.query(
       `SELECT f.*, u.full_name, u.email FROM fitness_progress f JOIN users u ON f.user_id = u.user_id
-       WHERE MONTH(f.recorded_date)=? AND YEAR(f.recorded_date)=? ORDER BY f.recorded_date`,
+       WHERE EXTRACT(MONTH FROM f.recorded_date)=? AND EXTRACT(YEAR FROM f.recorded_date)=? ORDER BY f.recorded_date`,
       [month, year]);
     return records;
   }
 
   static async deleteFitnessRecord(id) {
-    await pool.query('DELETE FROM fitness_progress WHERE record_id=?', [id]);
+    await pool.query('DELETE FROM fitness_progress WHERE progress_id=?', [id]);
     return { message: 'Fitness record deleted' };
   }
 
