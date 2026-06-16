@@ -3,7 +3,7 @@
     <div class="container">
       <router-link class="navbar-brand d-flex align-items-center gap-2" to="/">
         <i class="bi bi-heart-pulse-fill text-accent" style="font-size:1.4rem;"></i>
-        <span>FitTrack Rwanda</span>
+        <span>Fitness Time Rwanda</span>
       </router-link>
 
       <button class="navbar-toggler" type="button" @click="mobileOpen = !mobileOpen" aria-label="Toggle navigation">
