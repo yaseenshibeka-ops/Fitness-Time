@@ -148,46 +148,40 @@ class AdminService {
   }
 
   static async deleteProduct(id) {
-    await pool.query(
-      `DELETE FROM order_items WHERE product_id=? AND order_id IN
-       (SELECT order_id FROM orders WHERE status IN ("cancelled", "refunded"))`,
-      [id]
-    );
+    const connection = await pool.getConnection();
     try {
-      await pool.query('DELETE FROM products WHERE product_id=?', [id]);
+      await connection.beginTransaction();
+      await connection.query('DELETE FROM cart_items WHERE product_id=?', [id]);
+      await connection.query('DELETE FROM order_items WHERE product_id=?', [id]);
+      await connection.query('DELETE FROM products WHERE product_id=?', [id]);
+      await connection.commit();
       return { message: 'Product deleted permanently' };
     } catch (err) {
-      if (err.code === '23503') {
-        await pool.query('UPDATE products SET is_active=FALSE WHERE product_id=?', [id]);
-        return { message: 'Product has active orders. Deactivated instead.' };
-      }
+      await connection.rollback();
       throw err;
+    } finally {
+      connection.release();
     }
   }
 
   static async bulkDeleteProducts(ids) {
     if (!ids || !ids.length) throw { statusCode: 400, message: 'No IDs provided' };
-    let deleted = 0;
-    let deactivated = 0;
-    for (const id of ids) {
-      await pool.query(
-        `DELETE FROM order_items WHERE product_id=? AND order_id IN
-         (SELECT order_id FROM orders WHERE status IN ("cancelled", "refunded"))`,
-        [id]
-      );
-      try {
-        await pool.query('DELETE FROM products WHERE product_id=?', [id]);
-        deleted++;
-      } catch (err) {
-        if (err.code === '23503') {
-          await pool.query('UPDATE products SET is_active=FALSE WHERE product_id=?', [id]);
-          deactivated++;
-        } else {
-          throw err;
-        }
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+      for (const id of ids) {
+        await connection.query('DELETE FROM cart_items WHERE product_id=?', [id]);
+        await connection.query('DELETE FROM order_items WHERE product_id=?', [id]);
+        await connection.query('DELETE FROM products WHERE product_id=?', [id]);
       }
+      await connection.commit();
+      return { message: `${ids.length} products deleted permanently` };
+    } catch (err) {
+      await connection.rollback();
+      throw err;
+    } finally {
+      connection.release();
     }
-    return { message: `${deleted} deleted, ${deactivated} deactivated (has active orders)` };
   }
 
   // ===================== CATEGORIES =====================
