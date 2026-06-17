@@ -138,13 +138,23 @@ async function saveProduct() {
 
 async function deleteProduct(id) {
   if (!confirm('Delete this product?')) return
-  await api.delete(`/admin/products/${id}`)
+  try {
+    const res = await api.delete(`/admin/products/${id}`)
+    alert(res.data?.message || 'Product deleted')
+  } catch (e) {
+    alert(e?.message || 'Failed to delete product')
+  }
   await loadProducts()
 }
 
 async function bulkDelete() {
   if (!confirm(`Delete ${selected.value.length} products?`)) return
-  await api.post('/admin/products/bulk-delete', { ids: selected.value })
+  try {
+    const res = await api.post('/admin/products/bulk-delete', { ids: selected.value })
+    alert(res.data?.message || `${selected.value.length} products processed`)
+  } catch (e) {
+    alert(e?.message || 'Failed to delete products')
+  }
   selected.value = []
   await loadProducts()
 }

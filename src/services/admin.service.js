@@ -148,14 +148,36 @@ class AdminService {
   }
 
   static async deleteProduct(id) {
-    await pool.query('DELETE FROM products WHERE product_id=?', [id]);
-    return { message: 'Product deleted permanently' };
+    try {
+      await pool.query('DELETE FROM products WHERE product_id=?', [id]);
+      return { message: 'Product deleted permanently' };
+    } catch (err) {
+      if (err.code === '23503') {
+        await pool.query('UPDATE products SET is_active=FALSE WHERE product_id=?', [id]);
+        return { message: 'Product has existing orders. Marked as inactive instead.' };
+      }
+      throw err;
+    }
   }
 
   static async bulkDeleteProducts(ids) {
     if (!ids || !ids.length) throw { statusCode: 400, message: 'No IDs provided' };
-    await pool.query('DELETE FROM products WHERE product_id = ANY(?)', [ids]);
-    return { message: `${ids.length} products deleted permanently` };
+    let deleted = 0;
+    let deactivated = 0;
+    for (const id of ids) {
+      try {
+        await pool.query('DELETE FROM products WHERE product_id=?', [id]);
+        deleted++;
+      } catch (err) {
+        if (err.code === '23503') {
+          await pool.query('UPDATE products SET is_active=FALSE WHERE product_id=?', [id]);
+          deactivated++;
+        } else {
+          throw err;
+        }
+      }
+    }
+    return { message: `${deleted} deleted, ${deactivated} marked inactive (has orders)` };
   }
 
   // ===================== CATEGORIES =====================
