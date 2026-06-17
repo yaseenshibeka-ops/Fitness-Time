@@ -148,13 +148,18 @@ class AdminService {
   }
 
   static async deleteProduct(id) {
+    await pool.query(
+      `DELETE FROM order_items WHERE product_id=? AND order_id IN
+       (SELECT order_id FROM orders WHERE status IN ("cancelled", "refunded"))`,
+      [id]
+    );
     try {
       await pool.query('DELETE FROM products WHERE product_id=?', [id]);
       return { message: 'Product deleted permanently' };
     } catch (err) {
       if (err.code === '23503') {
         await pool.query('UPDATE products SET is_active=FALSE WHERE product_id=?', [id]);
-        return { message: 'Product has existing orders. Marked as inactive instead.' };
+        return { message: 'Product has active orders. Deactivated instead.' };
       }
       throw err;
     }
@@ -165,6 +170,11 @@ class AdminService {
     let deleted = 0;
     let deactivated = 0;
     for (const id of ids) {
+      await pool.query(
+        `DELETE FROM order_items WHERE product_id=? AND order_id IN
+         (SELECT order_id FROM orders WHERE status IN ("cancelled", "refunded"))`,
+        [id]
+      );
       try {
         await pool.query('DELETE FROM products WHERE product_id=?', [id]);
         deleted++;
@@ -177,7 +187,7 @@ class AdminService {
         }
       }
     }
-    return { message: `${deleted} deleted, ${deactivated} marked inactive (has orders)` };
+    return { message: `${deleted} deleted, ${deactivated} deactivated (has active orders)` };
   }
 
   // ===================== CATEGORIES =====================
