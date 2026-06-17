@@ -148,14 +148,14 @@ class AdminService {
   }
 
   static async deleteProduct(id) {
-    await pool.query('UPDATE products SET is_active=FALSE WHERE product_id=?', [id]);
-    return { message: 'Product deactivated' };
+    await pool.query('DELETE FROM products WHERE product_id=?', [id]);
+    return { message: 'Product deleted permanently' };
   }
 
   static async bulkDeleteProducts(ids) {
     if (!ids || !ids.length) throw { statusCode: 400, message: 'No IDs provided' };
-    await pool.query('UPDATE products SET is_active=FALSE WHERE product_id = ANY(?)', [ids]);
-    return { message: `${ids.length} products deactivated` };
+    await pool.query('DELETE FROM products WHERE product_id = ANY(?)', [ids]);
+    return { message: `${ids.length} products deleted permanently` };
   }
 
   // ===================== CATEGORIES =====================
